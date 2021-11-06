@@ -2,7 +2,7 @@ NAME = ft_container
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 CC = clang++
 
-CFLAGS += -I ./inc/
+CFLAGS += -I ./Iterators/ -I./vector/ -I ./utils/
 
 FILES = vector.cpp
 
