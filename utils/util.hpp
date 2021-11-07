@@ -51,6 +51,18 @@ namespace ft
 	template<>
 	struct is_integral<unsigned long long int> { const static bool value = true; };
 
+	template<typename Iterator>
+	ptrdiff_t distance(Iterator first, Iterator last)
+	{
+		ptrdiff_t dist;
+		while (first != last)
+		{
+			dist++;
+			first++;
+		}
+		return dist;
+	}
+
 
 }
 

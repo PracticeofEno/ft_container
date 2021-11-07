@@ -168,8 +168,10 @@ namespace ft {
 						throw std::bad_alloc();
 					for (size_type i = 0; i < _size; i++)
 					{
-						push_back(_data[i]);
+						tmp[i] = _data[i];
 					}
+					delete[] _data;
+					_data = tmp;
 					_capacity = n;
 				}
 			}
@@ -177,31 +179,25 @@ namespace ft {
 
 			/*				Modifiers				*/
 			template <class InputIter>
-			void assign(InputIter first, InputIter last)
+			void assign(InputIter first, InputIter last, 
+							typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0)
 			{
-				if(_data != 0)
-					delete[] _data;
-				_data = _alloc.allocate(last - first);
+				clear();
 				while (first != last)
 				{
 					push_back(*first);
-					_size = _size + 1;
-					first++;
+					++first;
 				}
-				_capacity = last - first;
 			}
 
-			void assing(size_type n, const value_type& val)
+			void assign(size_type n, const value_type& val)
 			{
-				if(_data != 0)
-					delete[] _data;
-				_data = _alloc.allocate(n);
-				for (size_type i = 0; i < n; i++)
+				clear();
+				while (n)
 				{
 					push_back(val);
-					_size = _size + 1;
+					n--;
 				}
-				_capacity = n;
 			}
 
 			void push_back(const value_type& val)
@@ -217,44 +213,21 @@ namespace ft {
 				if (_size > 0)
 					_size = _size - 1;
 			}
-
+/*
 			iterator insert(iterator position, const value_type& val)
 			{
-				iterator it;
-
-				if(_size + 1 > _capacity)
-					realloc(_size + 1);
-				for (it = end() - 1; it >= position; it--)
-				{
-					*(it + 1) = *it;
-				}
-				*(position) = val;
-				_size = _size + 1;
-				return position;
 				
 			}
+			*/
 			void insert(iterator position, size_type n, const value_type& val) 
 			{
-				iterator it;
-
-				if(_size + n > _capacity)
-					realloc(_size + n);
-				for (it = end() - 1; it >= position; it--)
-				{
-					*(it + n) = *it;
-				}
-				for (size_type i = 0; i < n; i++)
-				{
-					*(position + i) = val;
-				}
-				_size = _size + n;
 			}
 /*
 			template <class InputIter>
 			void insert(iterator position, InputIter first , InputIter last, 
 							typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0)
 			{
-
+				
 			}
 */
 			/*****************************************/
@@ -268,6 +241,10 @@ namespace ft {
 			}
 			/*****************************************/
 
+			void clear() {
+				while (_size)
+					pop_back();
+			}
 
 		protected:
 			std::allocator<T> _alloc;
