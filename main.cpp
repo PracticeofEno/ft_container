@@ -5,34 +5,30 @@
 
 int main()
 {
-	std::vector<int> k;
-	k.push_back(1);
-	k.push_back(2);
-	k.push_back(3);
-	k.push_back(4);
-	k.push_back(5);
+    ft::vector<int> ft_c0;
+    std::vector<int> std_c0;
+    int testSize = 42;
 
-	ft::vector<int> k2;
-	k2.push_back(1);
-	k2.push_back(2);
-	k2.push_back(3);
-	k2.push_back(4);
-	k2.push_back(5);
+    for (int i = 0; i < testSize; i++)
+    {
+        ft_c0.insert(ft_c0.end(), i);
+        std_c0.insert(std_c0.end(), i);
+    }
 
-	std::cout << k.capacity() << std::endl;
-	k.insert(k.begin() + 1, 5);
-	//k2.insert(k2.begin() + 1, 5);
-	std::cout << "k : " << k.capacity() << " | " << "k2 : " << k2.capacity() << std::endl;
-	k.insert(k.begin() + 1, 5, 10);
-	for (std::vector<int>::iterator it = k.begin(); it < k.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
-	k2.insert(k2.begin() + 1, 5, 10);
-	for (std::vector<int>::iterator it = k.begin(); it < k.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
-	std::cout << "-----------------------" << std::endl;
-	//for (ft::vector<int>::iterator it = k2.begin(); it < k2.end(); it++)
-		//std::cout << *it << " ";
-	return (0);
+    ft::vector<int>::reverse_iterator ft_it0;
+    std::vector<int>::reverse_iterator std_it0;
+
+    ft_it0 = ft_c0.rbegin();
+    std_it0 = std_c0.rbegin();
+
+    ft::vector<int>::reverse_iterator ft_it1(ft_it0);
+    std::vector<int>::reverse_iterator std_it1(std_it0);
+
+    {
+        ft::vector<int>::reverse_iterator ft_it1(ft_c0.begin());
+        std::vector<int>::reverse_iterator std_it1(std_c0.begin());
+    }
+    ft_it0++;
+    std_it0++;
+    ft_it0 += 21;
 }

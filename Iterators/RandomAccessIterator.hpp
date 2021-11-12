@@ -117,7 +117,6 @@ namespace ft
 			friend inline bool operator>=(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
 				return (lhs.array >= rhs.array);
 			}
-
 	};
 }
 #endif

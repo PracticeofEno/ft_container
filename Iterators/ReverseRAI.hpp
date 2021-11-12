@@ -1,8 +1,9 @@
 #ifndef REVERSERAI_HPP
 #define REVERSERAI_HPP
 
-template <class Iterator>
+#include "vector.hpp"
 
+template <class Iterator>
 class ReverseRAI {
 	public:
 		typedef Iterator iterator_type;
@@ -19,7 +20,8 @@ class ReverseRAI {
 		~ReverseRAI() { }
 
 		ReverseRAI& operator=(const ReverseRAI& tmp) {
-			Iterator::operator=(tmp);
+			current = tmp.getCurrent();
+			//Iterator::operator=(tmp);
 			return *this;
 		}
 
@@ -85,7 +87,60 @@ class ReverseRAI {
 	protected: 
 		Iterator current;
 
+	private:
+		Iterator getCurrent() const { return current; }
+
 
 };
+
+template <typename Iterator>
+inline bool	operator==(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return (lhs.base() == rhs.base());
+}
+template <typename Iterator>
+inline bool	operator<(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return (rhs.base() < lhs.base());
+}
+template <typename Iterator>
+inline bool	operator!=(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return !(lhs == rhs);
+}
+template <typename Iterator>
+inline bool	operator>(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return (rhs < lhs);
+}
+template <typename Iterator>
+inline bool	operator<=(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return !(rhs < lhs);
+}
+template <typename Iterator>
+inline bool	operator>=(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return !(lhs < rhs);
+}
+// Comparison of reverse_iterator to const reverse iterator
+template <typename IteratorL, typename IteratorR>
+inline bool operator==(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return (lhs.base() == rhs.base());
+}
+template <typename IteratorL, typename IteratorR>
+inline bool operator<(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return (rhs.base() < lhs.base());
+}
+template <typename IteratorL, typename IteratorR>
+inline bool operator!=(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return !(lhs == rhs);
+}
+template <typename IteratorL, typename IteratorR>
+inline bool operator>(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return (rhs < lhs);
+}
+template <typename IteratorL, typename IteratorR>
+inline bool operator<=(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return !(rhs < lhs);
+}
+template <typename IteratorL, typename IteratorR>
+inline bool operator>=(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return !(lhs < rhs);
+}
 
 #endif
