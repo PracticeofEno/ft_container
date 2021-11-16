@@ -2,7 +2,8 @@
 #define UTIL_HPP
 
 #include <iostream>
-#include <uchar.h>
+#include "RandomAccessIterator.hpp"
+#include "vector.hpp"
 /////   max_szie() util    ////////////////
 template <int>
 size_t CatchOS();
@@ -85,15 +86,13 @@ namespace ft
 	{
 		while (first1!=last1)
 		{
-			if (first2==last2) 
-				break;
-			if (comp(*first1, *first2))  // min first1 than first2
-				return true;
-			if (comp(*first2, *first1))
+			if (first2==last2 || comp(*first2, *first1)) 
 				return false;
+			else if (comp(*first2, *first1)) 
+				return true;
 			++first1; ++first2;
 		}
-		return (first2!=last2);
+		return (true);
 	}
 
 	template <class Iterator1, class Iterator2>
@@ -108,6 +107,7 @@ namespace ft
 		}
 		return true;
 	}
+	
 	template <class T>
 	bool lessthan(T a, T b)
 	{
@@ -115,6 +115,7 @@ namespace ft
 			return true;
 		return false;
 	}
+
 	template <class T>
 	bool more(T a, T b)
 	{
@@ -122,6 +123,7 @@ namespace ft
 			return true;
 		return false;
 	}
+
 	template <class T>
 	bool morethan(T a, T b)
 	{

@@ -1,8 +1,6 @@
 #ifndef REVERSERAI_HPP
 #define REVERSERAI_HPP
 
-#include "vector.hpp"
-
 template <class Iterator>
 class ReverseRAI {
 	public:
@@ -29,7 +27,7 @@ class ReverseRAI {
 			return ReverseRAI(current - n);
 		}
 
-		ReverseRAI& operator+=(difference_type n) const {
+		ReverseRAI& operator+=(difference_type n)  {
 			this->current -= n;
 			return *this;
 		}
@@ -38,7 +36,7 @@ class ReverseRAI {
 			return ReverseRAI(current + n);
 		}
 
-		ReverseRAI& operator-=(difference_type n) const {
+		ReverseRAI& operator-=(difference_type n)  {
 			this->current += n;
 			return *this;
 		}
@@ -79,11 +77,10 @@ class ReverseRAI {
 			return out;
 		}
 
-		pointer operator->() const {
+		pointer operator->() {
 			return &(operator*());
-		}
+		}		
 
-		
 	protected: 
 		Iterator current;
 
@@ -141,6 +138,20 @@ inline bool operator<=(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<Iterat
 template <typename IteratorL, typename IteratorR>
 inline bool operator>=(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
 	return !(lhs < rhs);
+}
+
+template<typename Iterator>
+inline typename ReverseRAI<Iterator>::difference_type operator-(const ReverseRAI<Iterator>& lhs, const ReverseRAI<Iterator>& rhs) {
+	return (rhs.base() - lhs.base());
+}
+template<typename IteratorL, typename IteratorR>
+inline typename ReverseRAI<IteratorL>::difference_type operator-(const ReverseRAI<IteratorL>& lhs, const ReverseRAI<IteratorR>& rhs) {
+	return (rhs.base() - lhs.base());
+}
+
+template <typename Iterator>
+inline ReverseRAI<Iterator>	operator+(typename ReverseRAI<Iterator>::difference_type n, const ReverseRAI<Iterator>& x) {
+	return ReverseRAI<Iterator>(x.base() - n);
 }
 
 #endif

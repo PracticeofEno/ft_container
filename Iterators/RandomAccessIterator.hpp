@@ -66,8 +66,13 @@ namespace ft
 				return *this;
 			}
 
-			difference_type operator-(RandomAccessIterator it) const {
-				return this->array - it.array;
+			difference_type operator-(iterator it) const {
+				//if (it.array > this->array)
+			//	{
+				//	return it.array - this->array;
+			//	}
+			//	else
+					return this->array - it.array;
 			}
 
 			this_type operator-(difference_type n) const {
