@@ -28,11 +28,11 @@ namespace ft {
 			typedef ReverseRAI<const_iterator> const_reverse_iterator;
 
 			vector (const allocator_type& alloc = std::allocator<T>())
-			{
+			{ 
+				_alloc = alloc;
+				_data = 0;
 				_size = 0;
 				_capacity = 0;
-				_data = 0;
-				_alloc = alloc;
 			}
 			//fill
 			vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = std::allocator<T>())
@@ -61,12 +61,12 @@ namespace ft {
 			//typename = std::_RequireInputIter<_InputIterator>>
 			template <class InputIter>
 			vector(InputIter first, InputIter last, const allocator_type& alloc = std::allocator<T>(), 
-					typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0)
+					typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0) 
 			{
-				_size = 0;
-				_data = 0;
-				_capacity = 0;
 				_alloc = alloc;
+				_data = 0;
+				_size = 0;
+				_capacity = 0;
 				size_type n = ft::distance(first, last);
 				reserve(n);
 				while (first != last)
