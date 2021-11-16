@@ -64,10 +64,16 @@ namespace ft {
 					typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0)
 			{
 				_size = 0;
-				_capacity = 0;
 				_data = 0;
+				_capacity = 0;
 				_alloc = alloc;
-				assign(first, last);
+				size_type n = ft::distance(first, last);
+				reserve(n);
+				while (first != last)
+				{
+					push_back(*first);
+					first++;
+				}
 			}
 			vector (vector& tmp)
 			{
@@ -167,7 +173,8 @@ namespace ft {
 					{
 						tmp[i] = _data[i];
 					}
-					_alloc.deallocate(_data, _size);
+					if (_data != 0)
+						_alloc.deallocate(_data, _size);
 					_data = tmp;
 					_capacity = n;
 				}
@@ -201,7 +208,7 @@ namespace ft {
 			{
 				if (_size + 1 > _capacity)
 					realloc(_size + 1);
-				*(_data +_size) = val;
+				_data[_size] = val;
 				_size++;
 			}
 
