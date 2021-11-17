@@ -35,12 +35,12 @@ namespace ft
 
 			this_type operator++(int){
 				this_type out(*this);
-				++this->array;
+				array = array + 1;
 				return out;
 			}
 
 			this_type& operator++() {
-				this->array++;
+				array = array + 1;
 				return *this;
 			}
 

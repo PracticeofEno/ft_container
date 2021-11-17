@@ -67,13 +67,7 @@ namespace ft {
 				_data = 0;
 				_size = 0;
 				_capacity = 0;
-				size_type n = ft::distance(first, last);
-				reserve(n);
-				while (first != last)
-				{
-					push_back(*first);
-					first++;
-				}
+				assign(first, last);
 			}
 			vector (vector& tmp)
 			{

@@ -172,7 +172,7 @@ int main()
 		std::cout << (*ft_ret == *std_ret) << std::endl;
 		testVector(ft_c0, std_c0, "");
 
-		ft_ret = ft_c0.insert(ft_c0.begin(), "42");
+		ft_ret = ft_c0.insert(++ft_c0.begin(), "42");
 		std_ret = std_c0.insert(++std_c0.begin(), "42");
 		std::cout << (*ft_ret == *std_ret) << std::endl;
 		testVector(ft_c0, std_c0, "");
