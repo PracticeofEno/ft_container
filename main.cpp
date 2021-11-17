@@ -5,14 +5,13 @@
 #include "exampleClass.hpp"
 #include "compClass.hpp"
 
-
 void
-putVector( ft::vector<std::string> const & vct, int errorPos = -1 )	{
+putVector( ft::vector<float> const & vct, int errorPos = -1 )	{
 
 	std::cout << vct.size() << std::endl;
 	std::cout << vct.capacity() << std::endl;
-	 ft::vector<std::string>::const_iterator it = vct.begin();
-	 ft::vector<std::string>::const_iterator ite = vct.end();
+	 ft::vector<float>::const_iterator it = vct.begin();
+	 ft::vector<float>::const_iterator ite = vct.end();
 
 	int	printMax;
 
@@ -32,11 +31,11 @@ putVector( ft::vector<std::string> const & vct, int errorPos = -1 )	{
 }
 
 void
-putVector( std::vector<std::string> const & vct, int errorPos = -1 )	{
+putVector( std::vector<float> const & vct, int errorPos = -1 )	{
 	std::cout << vct.size() << std::endl;
 	std::cout << vct.capacity() << std::endl;
-	std::vector<std::string>::const_iterator it = vct.begin();
-	std::vector<std::string>::const_iterator ite = vct.end();
+	std::vector<float>::const_iterator it = vct.begin();
+	std::vector<float>::const_iterator ite = vct.end();
 
 	int	printMax;
 
@@ -56,7 +55,7 @@ putVector( std::vector<std::string> const & vct, int errorPos = -1 )	{
 }
 
 void
-testVector( ft::vector<std::string> const & ft_vct, std::vector<std::string> const &std_vct,
+testVector( ft::vector<float> const & ft_vct, std::vector<float> const &std_vct,
 bool print, std::string message = "" )	{
 
 	bool	success = true;
@@ -80,11 +79,11 @@ bool print, std::string message = "" )	{
 	if (ft_vct.size() > 0)
 	{
 		int i = 0;
-		 ft::vector<std::string>::const_iterator	ft_it = ft_vct.begin();
-		 ft::vector<std::string>::const_iterator	ft_ite = ft_vct.end();
+		 ft::vector<float>::const_iterator	ft_it = ft_vct.begin();
+		 ft::vector<float>::const_iterator	ft_ite = ft_vct.end();
 
-		 std::vector<std::string>::const_iterator	std_it = std_vct.begin();
-		 std::vector<std::string>::const_iterator	std_ite = std_vct.end();
+		 std::vector<float>::const_iterator	std_it = std_vct.begin();
+		 std::vector<float>::const_iterator	std_ite = std_vct.end();
 		while (ft_it != ft_ite && std_it != std_ite)	{
 
 			if(*ft_it != *std_it)	{
@@ -139,7 +138,7 @@ bool	testBool(bool b, const char * file, int const lineNo, int const loopIter )	
 
 
 void
-testReserve(size_t testSize, ft::vector<std::string> & ft_c0, std::vector<std::string> & std_c0)	 {
+testReserve(size_t testSize, ft::vector<float> & ft_c0, std::vector<float> & std_c0)	 {
 		std::cout <<  "[ reserve("<< testSize << ") ]" << std::endl;
 
 		ft_c0.reserve(testSize);
@@ -151,50 +150,22 @@ testReserve(size_t testSize, ft::vector<std::string> & ft_c0, std::vector<std::s
 
 int main()
 {
+	std::cout <<  "~~~~~~~~~~~ " << __func__ << " with floats ~~~~~~~~~~~" <<  std::endl;
 	{
-		std::cout <<  "[ Instanciate vector of 4 strings ]"  << std::endl;
-		ft::vector<std::string>		ft_c0(4, "___");
-		std::vector<std::string>	std_c0(4, "___");
-		ft::vector<std::string>::iterator	ft_ret;
-		std::vector<std::string>::iterator	std_ret;
+		std::cout <<  "TEST CLEAR FUNCTION with vector of 1000000 floats" <<  std::endl;
+		ft::vector<float> ft_c0 (1000000, 42.21f);
+		std::vector<float> std_c0 (1000000, 42.21f);
+
+		testVector(ft_c0, std_c0, "");
+		ft_c0.clear();
+		std_c0.clear();
 		testVector(ft_c0, std_c0, "");
 
-
-		std::cout <<  "[ Insert with insert(iterator, value) ]"  << std::endl;
-
-		ft_ret = ft_c0.insert(ft_c0.begin(), "A");
-		std_ret = std_c0.insert(std_c0.begin(), "A");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
+		std::cout << "TEST Clear with forced reallocation by swapping with a default constructed vector" <<  std::endl;
+		ft::vector<float>().swap(ft_c0);
+		std::vector<float>().swap(std_c0);
 		testVector(ft_c0, std_c0, "");
-
-		ft_ret = ft_c0.insert(ft_c0.begin(), "B");
-		std_ret = std_c0.insert(std_c0.begin(), "B");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
-		testVector(ft_c0, std_c0, "");
-
-		ft_ret = ft_c0.insert(++ft_c0.begin(), "42");
-		std_ret = std_c0.insert(++std_c0.begin(), "42");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
-		testVector(ft_c0, std_c0, "");
-
-		ft_ret = ft_c0.insert(--ft_c0.end(), "The End...");
-		std_ret = std_c0.insert(--std_c0.end(), "The End...");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
-		testVector(ft_c0, std_c0, "");
-
-		ft_ret = ft_c0.insert(ft_c0.end(), "End...");
-		std_ret = std_c0.insert(std_c0.end(), "End...");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
-		testVector(ft_c0, std_c0, "");
-
-		ft_ret = ft_c0.insert(ft_c0.begin() + ft_c0.size() / 2, "middle...");
-		std_ret = std_c0.insert(std_c0.begin() + std_c0.size() / 2, "middle...");
-		std::cout << (*ft_ret == *std_ret) << std::endl;
-		testVector(ft_c0, std_c0, "");
-
-
-		std::cout <<  "[ test return of insert function ]"  << std::endl;
-		std::cout << (*(ft_c0.insert(++ft_c0.begin(), "Return_this")) == *(std_c0.insert(++std_c0.begin(), "Return_this"))) << std::endl;
-		
+		testBool(ft_c0.capacity() == std_c0.capacity(), "", -1, -1);
 	}
+	return (0);
 }

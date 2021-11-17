@@ -53,7 +53,7 @@ namespace ft {
 					_capacity = n;
 					for (size_type i = 0; i < n; i++)
 					{
-						_data[i] = val;
+						_alloc.construct(_data + i , val);
 						_size++;
 					}
 				}
@@ -69,11 +69,8 @@ namespace ft {
 				_capacity = 0;
 				size_type n = ft::distance(first, last);
 				reserve(n);
-				while (first != last)
-				{
-					push_back(*first);
-					first++;
-				}
+				std::uninitialized_copy(first, last, _data);
+				_size = n;
 			}
 			vector (vector& tmp)
 			{
@@ -171,7 +168,7 @@ namespace ft {
 						throw std::bad_alloc();
 					for (size_type i = 0; i < _size; i++)
 					{
-						tmp[i] = _data[i];
+						_alloc.construct(tmp + i, _data[i]);
 					}
 					if (_data != 0)
 						_alloc.deallocate(_data, _size);
@@ -208,7 +205,7 @@ namespace ft {
 			{
 				if (_size + 1 > _capacity)
 					realloc(_size + 1);
-				_data[_size] = val;
+				_alloc.construct(_data + _size, val);
 				_size++;
 			}
 
@@ -260,8 +257,9 @@ namespace ft {
 			iterator erase (iterator position)
 			{
 				iterator it(position);
-				while (position != end())
+				while (position != end() - 1)
 				{
+					//_alloc.construct(&(*position), *(position + 1));
 					*position = *(position + 1);
 					position++;
 				}
@@ -271,7 +269,7 @@ namespace ft {
 
 			iterator erase (iterator first, iterator last)
 			{
-				iterator it(last);
+				iterator it(first);
 				while (last != end()) {
 					*first = *last;
 					++first;
@@ -356,7 +354,7 @@ namespace ft {
 				if (tmp == 0)
 					throw std::bad_alloc();
 				for (size_type i = 0; i < _size; i++)
-					tmp[i] = _data[i];
+					_alloc.construct(tmp + i, _data[i]);
 				if (capatmp != 1)
 					_alloc.deallocate(_data, _size);
 				_data = tmp;
