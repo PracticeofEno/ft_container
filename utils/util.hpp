@@ -2,24 +2,7 @@
 #define UTIL_HPP
 
 #include <iostream>
-#include "RandomAccessIterator.hpp"
-#include "vector.hpp"
-/////   max_szie() util    ////////////////
-template <int>
-size_t CatchOS();
-
-template <>
-size_t CatchOS<4>()
-{
-	return 32;
-}
-
-template <>
-size_t CatchOS<8>()
-{
-	return 64;
-}
-////////////////////////////////////////
+#include "../Iterators/RandomAccessIterator.hpp"
 
 namespace ft
 {

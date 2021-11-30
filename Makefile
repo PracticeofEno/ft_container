@@ -1,8 +1,8 @@
 NAME = ft_container
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 
 CC = clang++
 
-CFLAGS += -I ./Iterators/ -I./vector/ -I ./utils/
+CFLAGS += -I ./Iterators/ -I./vector/ -I ./utils/ -I ./stack/ -I ./map/
 
 FILES = vector.cpp
 

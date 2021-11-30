@@ -1,18 +1,18 @@
-#ifndef RANDOMACCESSITERATOR_HPP
-#define RANDOMACCESSITERATOR_HPP
+#ifndef MAPITERATOR_HPP
+#define MAPITERATOR_HPP
 
 #include <memory>
 #include <cstddef>
 
 namespace ft
 {
-	template <typename T, typename Pointer, typename Reference, class Category = std::random_access_iterator_tag>
-	class RandomAccessIterator 
+	template <typename T, typename Pointer, typename Reference, class Category = std::bidirectional_iterator_tag>
+	class MapIterator 
 	{
 		public:
-			typedef RandomAccessIterator<T, Pointer, Reference> this_type;
-			typedef RandomAccessIterator<T, T*, T&> iterator;
-			typedef RandomAccessIterator<T, const T*, const T&> const_iterator;
+			typedef MapIterator<T, Pointer, Reference> this_type;
+			typedef MapIterator<T, T*, T&> iterator;
+			typedef MapIterator<T, const T*, const T&> const_iterator;
 			typedef T 			value_type;
 			typedef Pointer 	pointer;
 			typedef Reference 	reference;
@@ -23,10 +23,10 @@ namespace ft
 			
 			pointer array;
 		public:
-			RandomAccessIterator() : array(NULL) {}
-			RandomAccessIterator(const pointer elem) : array(elem) {}
-			RandomAccessIterator(const iterator& x) : array(const_cast<pointer>(x.array)) {}
-			virtual ~RandomAccessIterator() {}
+			MapIterator() : array(NULL) {}
+			MapIterator(const pointer elem) : array(elem) {}
+			MapIterator(const iterator& x) : array(const_cast<pointer>(x.array)) {}
+			virtual ~MapIterator() {}
 
 			this_type& operator=(const iterator& x){
 				this->array = x.array;
@@ -44,17 +44,6 @@ namespace ft
 				return *this;
 			}
 
-			this_type operator+(difference_type n) const {
-				this_type out(*this);
-				out.array += n;
-				return out;
-			}
-
-			this_type& operator+=(difference_type n) {
-				this->array += n;
-				return *this;
-			}
-
 			this_type operator--(int) {
 				this_type out(*this);
 				--this->array;
@@ -65,17 +54,7 @@ namespace ft
 				--this->array;
 				return *this;
 			}
-
-			difference_type operator-(iterator it) const {
-				return this->array - it.array;
-			}
-
-			this_type operator-(difference_type n) const {
-				this_type out(*this);
-				out -= n;
-				return out;
-			}
-
+            
 			this_type& operator-=(difference_type n){
 				this->array -= n;
 				return *this;
@@ -94,29 +73,30 @@ namespace ft
 			}
 
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator==(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator==(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array == rhs.array);
 			}
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator!=(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator!=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array != rhs.array);
 			}
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator<(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator<(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array < rhs.array);
 			}
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator>(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator>(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array > rhs.array);
 			}
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator<=(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator<=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array <= rhs.array);
 			}
 			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator>=(const this_type& lhs, const RandomAccessIterator<T2, P, R, C>& rhs){
+			friend inline bool operator>=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array >= rhs.array);
 			}
 	};
 }
+
 #endif

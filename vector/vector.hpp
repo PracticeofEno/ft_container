@@ -35,7 +35,7 @@ namespace ft {
 				_capacity = 0;
 			}
 			//fill
-			vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = std::allocator<T>())
+			vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = std::allocator<T>()) 
 			{
 				_alloc = alloc;
 				_data = 0;
@@ -61,8 +61,9 @@ namespace ft {
 			//typename = std::_RequireInputIter<_InputIterator>>
 			template <class InputIter>
 			vector(InputIter first, InputIter last, const allocator_type& alloc = std::allocator<T>(), 
-					typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0) 
+					typename ft::enable_if<ft::is_integral<InputIter>::value, void>::type* = 0)
 			{
+				
 				_alloc = alloc;
 				_data = 0;
 				_size = 0;
@@ -74,17 +75,22 @@ namespace ft {
 			}
 			vector (vector& tmp)
 			{
-				_data = 0;
 				_size = 0;
 				_capacity = 0;
+				_data = 0;
 				*this = tmp;
 			}
+			
 			~vector()
 			{
-				_alloc.deallocate(_data, _size);
+				if (_data != 0)
+					_alloc.deallocate(_data, _capacity);
 			}
-			vector& operator=(vector& tmp)
+
+			vector& operator=(const vector& tmp)
 			{
+				_size = 0;
+				reserve(tmp._capacity);
 				assign(tmp.begin(), tmp.end());
 				return *this;
 			}
@@ -102,14 +108,16 @@ namespace ft {
 
 			reference at (size_type n)
 			{
-				if (n <= 0 || n >= _size)
+				if (n >= 0 && n < _size)
+					return _data[n];
+				else
 					throw std::out_of_range("out of range");
-				return _data[n];
 			}
 			const_reference at (size_type n) const {
-				if (n <= 0 || n >= _size)
+				if (n >= 0 && n < _size)
+					return _data[n];
+				else
 					throw std::out_of_range("out of range");
-				return _data[n];
 			}
 
 			reference front() {
@@ -286,9 +294,23 @@ namespace ft {
 
 			void swap(vector& x)
 			{
-				vector tmp(x);
-				x = *this;
-				*this = tmp;
+				vector tmp;
+
+				tmp._size = x._size;
+				tmp._capacity = x._capacity;
+				tmp._data = x._data;
+
+				x._size = _size;
+				x._capacity = _capacity;
+				x._data = _data;
+
+				_size = tmp._size;
+				_capacity = tmp._capacity;
+				_data = tmp._data;
+
+				tmp._size = 0;
+				tmp._data = 0;
+				tmp._capacity = 0;
 			}
 
 			/*****************************************/
@@ -424,9 +446,7 @@ namespace ft {
 
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
-		vector<T,Alloc>	tmp(x);
-		x = y;
-		y = tmp;
+		x.swap(y);
 	}
 }
 
