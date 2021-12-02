@@ -21,14 +21,20 @@ public:
             if (*insert < *last)
             {
                 contentSwap(*parent, *insert); //
-                insert->left = parent;
-                insert->right = last;
+                parent->left = insert;
+                insert->parent = parent;
+                parent->right = last;
+                last->parent = parent;
+                setChildLeaf(insert, last);
             }
             else
             {
                 contentSwap(*parent, *last); //
-                last->left = parent;
-                last->right = insert;
+                parent->left = last;
+                last->parent = parent;
+                parent->right = insert;
+                insert->parent = parent;
+                setChildLeaf(insert, last);
             }
         }
         else
@@ -36,24 +42,28 @@ public:
             if (*insert < *last)
             {
                 contentSwap(*parent, *last); //
-                last->left = insert;
-                last->right = parent;
+                parent->left = insert;
+                insert->parent = parent;
+                parent->right = last;
+                last->parent = parent;
+                setChildLeaf(insert, last);
             }
             else
             {
                 contentSwap(*parent, *insert); //
-                insert->left = last;
-                insert->right = parent;
+                parent->left = last;
+                last->parent = parent;
+                parent->right = insert;
+                insert->parent = parent;
+                setChildLeaf(insert, last);
             }
         }
     }
     void changeColor(Node<T> *node)
     {
         node->parent->color = RED;
-        if (node->parent->left == node)
-            node->parent->right->color = BLACK;
-        else
-            node->parent->left->color = BLACK;
+        node->parent->right->color = BLACK;
+        node->parent->left->color = BLACK;
         root->color = BLACK;
     }
 
@@ -72,7 +82,7 @@ public:
         {
             if (search(insertNode, &lastNode) == 0)
             {
-                if ((*lastNode) < (*insertNode))
+                if ((*insertNode) > (*lastNode) )
                 {
                     lastNode->right = insertNode;
                     insertNode->parent = lastNode;
@@ -110,9 +120,9 @@ public:
             *lastNode = node;
             if (node == insertNode)
                 return node;
-            else if (node < insertNode)
+            else if (*insertNode < *node)
                 node = node->left;
-            else if (node > insertNode)
+            else if (*insertNode > *node)
                 node = node->right;
         }
         return (0);
@@ -124,5 +134,12 @@ public:
     }
 
 private:
+    void setChildLeaf(Node<T>* node1, Node<T>* node2)
+    {
+        node1->left = &leaf;
+        node1->right = &leaf;
+        node2->left = &leaf;
+        node2->right = &leaf;
+    }
 };
 #endif
