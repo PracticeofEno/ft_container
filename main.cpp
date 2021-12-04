@@ -30,7 +30,7 @@ int main()
 	_rb.insert(&c);
 	_rb.insert(&d);
 	_rb.insert(&e);
-
 	
+	_rb.rotateRight(&d);
 	return (0);
 }

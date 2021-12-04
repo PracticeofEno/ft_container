@@ -133,6 +133,50 @@ public:
         leaf = tmp;
     }
 
+    void rotateRight(Node<T>* node)
+    {
+        Node<T>* tmp;
+
+        if (node->parent->right == node)
+        {
+            tmp = node->left->right;
+            if (node->parent != 0)
+                node->parent->right = node->left;
+            node->left->rihgt = node;
+            node->left = tmp;
+        }
+        else
+        {
+            tmp = node->left->right;
+            if (node->parent != 0)
+                node->parent->left = node->left;
+            node->left->rihgt = node;
+            node->left = tmp;
+        }
+    }
+
+    void rotateLeft(Node<T>* node)
+    {
+        Node<T>* tmp;
+
+        if (node->parent->right == node)
+        {
+            tmp = node->left->right;
+            if (node->parent != 0)
+                node->parent->right = node->right;
+            node->right->left = node;
+            node->right = tmp;
+        }
+        else
+        {
+            tmp = node->right->left;
+            if (node->parent != 0)
+                node->parent->left = node->right;
+            node->right->left = node;
+            node->right = tmp;
+        }
+    }
+
 private:
     void setChildLeaf(Node<T>* node1, Node<T>* node2)
     {
@@ -141,5 +185,7 @@ private:
         node2->left = &leaf;
         node2->right = &leaf;
     }
+
+    
 };
 #endif
