@@ -13,13 +13,18 @@ class RBTree
 public:
     typedef T1 key_type;
     Node<T1, T2> *root;
-    std::allocator<ft::pair<T1,T2> > alloc;
+    std::allocator<Node<T1, T2> > alloc;
     Node<T1, T2> leaf;
 
-    RBTree(std::allocator<ft::pair<T1,T2> > _alloc) : root(0), alloc(_alloc) { leaf.isNull = true; }
+    RBTree() { }
+    RBTree(std::allocator<Node<T1, T2> > _alloc) : root(0), alloc(_alloc) { leaf.isNull = true; }
 
-    void insert(Node<T1, T2> *insertNode)
+    Node<T1, T2> *insert(ft::pair<T1, T2> data)
     {
+        Node<T1, T2> *insertNode = alloc.allocate(1);
+        Node<T1, T2> *tmp;
+        alloc.construct(insertNode, Node<T1, T2>(data));
+
         Node<T1, T2> *lastNode = 0;
         insertNode->left = &leaf;
         insertNode->right = &leaf;
@@ -28,27 +33,32 @@ public:
         {
             root = insertNode;
             root->color = BLACK;
+            return insertNode;
+        }
+
+        tmp = search(insertNode->_data.first, &lastNode);
+        if (tmp == 0)
+        {
+            if ((*insertNode) > (*lastNode))
+            {
+                lastNode->right = insertNode;
+                insertNode->parent = lastNode;
+            }
+            else
+            {
+                lastNode->left = insertNode;
+                insertNode->parent = lastNode;
+            }
+            relocation(insertNode);
+            return insertNode;
         }
         else
         {
-            if (search(insertNode->_data.first, &lastNode) == 0)
-            {
-                if ((*insertNode) > (*lastNode) )
-                {
-                    lastNode->right = insertNode;
-                    insertNode->parent = lastNode;
-                }
-                else
-                {
-                    lastNode->left = insertNode;
-                    insertNode->parent = lastNode;
-                }
-                relocation(insertNode);
-            }
+            return tmp;
         }
     }
 
-    Node<T1, T2> *search(T1& search, Node<T1, T2> **lastNode)
+    Node<T1, T2> *search(const T1 &search, Node<T1, T2> **lastNode)
     {
         Node<T1, T2> *node;
 
@@ -77,16 +87,19 @@ public:
             eraseLink(findNode, lastNode);
         }
     }
-    
+
+    void setAlloc(std::allocator<Node<T1, T2> > _alloc)
+    {
+        alloc = _alloc;
+    }
 
 private:
-
-    void setLeaf(Node<T1, T2>** tmp)
+    void setLeaf(Node<T1, T2> **tmp)
     {
         *tmp = &leaf;
     }
 
-    void setChildLeaf(Node<T1, T2>* node1, Node<T1, T2>* node2)
+    void setChildLeaf(Node<T1, T2> *node1, Node<T1, T2> *node2)
     {
         setLeaf(&node1->left);
         setLeaf(&node1->right);
@@ -94,12 +107,12 @@ private:
         setLeaf(&node2->right);
     }
 
-    void eraseLink(Node<T1, T2> *delNode, Node<T1, T2>* lastNode)
+    void eraseLink(Node<T1, T2> *delNode, Node<T1, T2> *lastNode)
     {
-        Node<T1, T2>* removeNode;
+        Node<T1, T2> *removeNode;
 
         (void)lastNode;
-        if (delNode->left == &leaf && delNode->right == &leaf)  // case) delnode is  leaf node 
+        if (delNode->left == &leaf && delNode->right == &leaf) // case) delnode is  leaf node
         {
             removeNode = delNode;
             if (delNode->parent != 0)
@@ -119,7 +132,7 @@ private:
                 eraseRelocation(&leaf);
         }
         // && delNode->right != &leaf
-        else if (delNode->left != &leaf)  // case) delnode has two child
+        else if (delNode->left != &leaf) // case) delnode has two child
         {
             removeNode = findLargestSubtree(delNode->left);
             contentSwap(*removeNode, *delNode);
@@ -136,7 +149,7 @@ private:
             {
                 root = delNode->left;
                 root->right = delNode->right;
-                root->parent = 0;            
+                root->parent = 0;
             }
 
             removeNode->left->color = removeNode->left->color + 1;
@@ -144,7 +157,7 @@ private:
             if (removeNode->color == BLACK)
             {
                 eraseRelocation(removeNode->left);
-                //eraseRelocation
+                // eraseRelocation
             }
         }
         else if (delNode->left == &leaf && delNode->right != &leaf)
@@ -173,24 +186,23 @@ private:
 
             {
                 delNode->right->color = BLACK;
-                //dealloc removeNode;
+                // dealloc removeNode;
             }
             if (delNode->right->color == DBLACK)
             {
                 eraseRelocation(delNode->right);
             }
         }
-        
     }
 
-    void eraseRelocation(Node<T1,T2>* dBlackNode)
+    void eraseRelocation(Node<T1, T2> *dBlackNode)
     {
-        Node<T1, T2>* brother;
+        Node<T1, T2> *brother;
 
         brother = getBrother(dBlackNode);
         if (brother != 0)
         {
-            if(brother->color == RED)
+            if (brother->color == RED)
             {
                 brother->color = BLACK;
                 brother->parent->color = RED;
@@ -227,7 +239,7 @@ private:
         root->color = BLACK;
     }
 
-    Node<T1, T2>* getBrother(Node<T1, T2>* node)
+    Node<T1, T2> *getBrother(Node<T1, T2> *node)
     {
         if (node != root)
         {
@@ -242,7 +254,7 @@ private:
         }
     }
 
-    Node<T1, T2>* getUncle(Node<T1, T2>* node)
+    Node<T1, T2> *getUncle(Node<T1, T2> *node)
     {
         if (node->parent->parent->left == node->parent)
             return node->parent->parent->right;
@@ -250,7 +262,7 @@ private:
             return node->parent->parent->left;
     }
 
-    Node<T1, T2>* findLargestSubtree(Node<T1, T2>* subtree)
+    Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree)
     {
         while (subtree->right != &leaf)
         {
@@ -259,7 +271,7 @@ private:
         return subtree;
     }
 
-    Node<T1, T2>* findSmallestSubtree(Node<T1, T2>* subtree)
+    Node<T1, T2> *findSmallestSubtree(Node<T1, T2> *subtree)
     {
         while (subtree->left != &leaf)
         {
@@ -268,9 +280,9 @@ private:
         return subtree;
     }
 
-    void rotateRight(Node<T1, T2>* node)
+    void rotateRight(Node<T1, T2> *node)
     {
-        Node<T1, T2>* tmp;
+        Node<T1, T2> *tmp;
         int isRightChild = 0;
 
         tmp = node->left->right;
@@ -286,7 +298,7 @@ private:
         {
             root = node->left;
         }
-        
+
         if (isRightChild == 1)
             node->parent->right = node->left;
         else if (isRightChild == -1)
@@ -296,9 +308,9 @@ private:
         node->left = tmp;
     }
 
-    void rotateLeft(Node<T1, T2>* node)
+    void rotateLeft(Node<T1, T2> *node)
     {
-        Node<T1, T2>* tmp;
+        Node<T1, T2> *tmp;
         int isRightChild = 0;
 
         tmp = node->right->left;
@@ -316,7 +328,7 @@ private:
         }
 
         if (isRightChild == 1)
-           node->parent->right = node->left;
+            node->parent->right = node->left;
         else if (isRightChild == -1)
             node->parent->left = node->right;
         node->right->left = node;
@@ -326,12 +338,12 @@ private:
 
     void relocation(Node<T1, T2> *insertNode)
     {
-        Node<T1, T2>* uncle;
-        Node<T1, T2>* parent;
-        Node<T1, T2>* grand = 0;
+        Node<T1, T2> *uncle;
+        Node<T1, T2> *parent;
+        Node<T1, T2> *grand = 0;
 
         parent = insertNode->parent;
-        if(insertNode != root)
+        if (insertNode != root)
             grand = parent->parent;
         if (grand != 0)
         {
@@ -356,9 +368,9 @@ private:
 
     void rotate(Node<T1, T2> *insert, Node<T1, T2> *parent, Node<T1, T2> *grand)
     {
-        Node<T1, T2>* mid = 0;
-        Node<T1, T2>* low = 0;
-        Node<T1, T2>* high = 0;
+        Node<T1, T2> *mid = 0;
+        Node<T1, T2> *low = 0;
+        Node<T1, T2> *high = 0;
 
         if (grand->right == parent) // low is middle
         {
@@ -375,7 +387,7 @@ private:
                 high = insert;
             }
         }
-        else                        // high is middle
+        else // high is middle
         {
             if (insert < parent)
             {
@@ -400,17 +412,17 @@ private:
         }
         else
             root = mid;
-         mid->parent = grand->parent;
-         mid->left = low;
-         mid->right = high;
-         low->parent = mid;
-         high->parent = mid;
-         setChildLeaf(low,high);
-         mid->color = BLACK;
-         low->color = RED;
-         high->color = RED;
+        mid->parent = grand->parent;
+        mid->left = low;
+        mid->right = high;
+        low->parent = mid;
+        high->parent = mid;
+        setChildLeaf(low, high);
+        mid->color = BLACK;
+        low->color = RED;
+        high->color = RED;
     }
-    
+
     void changeColor(Node<T1, T2> *node)
     {
         node->color = RED;
@@ -419,7 +431,5 @@ private:
         root->color = BLACK;
         relocation(node);
     }
-
-    
 };
 #endif

@@ -36,10 +36,14 @@ namespace ft
 
         ////////////////// constructor, destructor ///////////////////////
 
-        explicit Map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _alloc(alloc), _comp(comp) { }
+        explicit Map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _alloc(alloc), _comp(comp) 
+        { 
+            _rb.setAlloc(alloc);
+        }
         template <class InputIterator>
         Map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp)
         { 
+            _rb.setAlloc(alloc);
             while (first != last)
             {
                 //
@@ -70,21 +74,16 @@ namespace ft
         {
             Node<Key,T> *tmp;
 
-            tmp = _rb.search(val.first, tmp);
+            tmp = _rb.search(val.first, &tmp);
             if (tmp) // key is exist
             {
                 return ft::make_pair(iterator(tmp), true);
             }
             else  // non exist
             {
-                Node<Key, T>* _new = _alloc.allocate(1);
-                _alloc.construct(_new, Node<Key, T>(val));
+                return ft::make_pair(iterator(_rb.insert(val)), false);
             }
-            
         }
-
-
-
 
         class value_compare : std::binary_function<value_type, value_type, bool>
         { // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
@@ -105,7 +104,7 @@ namespace ft
 
     private : 
         allocator_type _alloc;
-        RBTree<Key, T> _rb(Alloc);
+        RBTree<Key, T> _rb;
         key_compare _comp;
     };
 }
