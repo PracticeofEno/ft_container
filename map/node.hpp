@@ -6,74 +6,75 @@
 #define BLACK 2
 #define DBLACK 3
 
-template <class T>
+template <class T1, class T2>
 class Node
 {
 public:
-    Node<T> *parent;
-    Node<T> *left;
-    Node<T> *right;
+    Node<T1, T2> *parent;
+    Node<T1, T2> *left;
+    Node<T1, T2> *right;
     int color;
-    bool isLeaf;
-    T _data;
+    bool isNull;
+    ft::pair<T1,T2> _data;
 
-    Node() : parent(0), left(0), right(0), color(BLACK), isLeaf(false), _data(T()) { }
-    Node(T data) : parent(0), left(0), right(0), color(RED), isLeaf(false) { _data = data; }
+    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1,T2>()) { }
+    Node(ft::pair<T1, T2>  data) : parent(0), left(0), right(0), color(RED), isNull(false) { _data = data; }
 
-    Node<T>& operator=(Node<T>& tmp)
+    Node<T1, T2>& operator=(Node<T1, T2> & tmp)
     {
         parent = tmp.parent;
         left = tmp.left;
         right = tmp.right;
         color = tmp.color;
-        isLeaf = tmp.isLeaf;
+        isNull = tmp.isNull;
         _data = tmp._data;
+        return *this;
     }
 
 private:
     
 };
 
-template <class T>
-bool operator==(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator==(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return lhs._data.first == rhs._data.first && lhs._data.second == rhs._data.second;
 }
 
-template <class T>
-bool operator!=(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator!=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return !(lhs == rhs);
 }
 
-template <class T>
-bool operator<(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator<(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return lhs._data.first < rhs._data.first || (!(rhs._data.first < lhs._data.first) && lhs._data.second < rhs._data.second);
 }
 
-template <class T>
-bool operator<=(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator<=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return !(rhs < lhs);
 }
 
-template <class T>
-bool operator>(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator>(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return rhs < lhs;
 }
 
-template <class T>
-bool operator>=(const Node<T> &lhs, const Node<T> &rhs)
+template <class T1, class T2>
+bool operator>=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return !(lhs < rhs);
 }
 
-template <class T>
-void contentSwap(Node<T> &lhs, Node<T> &rhs)
+template <class T1, class T2>
+void contentSwap(Node<T1, T2> &lhs, Node<T1, T2> &rhs)
 {
-    T tmp;
+    ft::pair<T1,T2> tmp;
     
     tmp = lhs._data;
     lhs._data = rhs._data;

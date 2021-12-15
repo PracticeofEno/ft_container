@@ -6,6 +6,7 @@
 
 namespace ft
 {
+	//T is Node<T1,T2>
 	template <typename T, typename Pointer, typename Reference, class Category = std::bidirectional_iterator_tag>
 	class MapIterator 
 	{
@@ -35,7 +36,18 @@ namespace ft
 
 			this_type operator++(int){
 				this_type out(*this);
-				array = array + 1;
+
+				if (array->parent == 0)
+					array = array->right;
+				else
+				{
+					if (array->parent->left == array)
+						array = array->parent;
+					else
+					{
+						array = array->parent->parent;
+					}
+				}
 				return out;
 			}
 
