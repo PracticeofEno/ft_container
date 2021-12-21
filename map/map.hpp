@@ -336,7 +336,7 @@ namespace ft
         
         mapped_type& operator[] (const key_type& k)
         {
-            return (*((this->insert(make_pair(k,mapped_type()))).first)).second;
+            return (*((this->insert(make_pair(k,mapped_type()))).first))._data.second;
         }
 
         allocator_type get_allocator() const

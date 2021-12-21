@@ -20,14 +20,13 @@ namespace ft
 			typedef size_t 		size_type;
 			typedef ptrdiff_t 	difference_type;
 			typedef Category 	iterator_category;
-			typedef Node<typename value_type::first_type, typename value_type::second_type> node_pointer;
 			//template <class T2, class A> friend class vector;
 			
-			node_pointer array;
+			pointer array;
 		public:
 			MapIterator() : array(NULL) {}
-			MapIterator(const node_pointer elem) : array(elem) {}
-			MapIterator(const iterator& x) : array(const_cast<node_pointer>(x.array)) {}
+			MapIterator(const pointer elem) : array(elem) {}
+			MapIterator(const iterator& x) : array(const_cast<pointer>(x.array)) {}
 			virtual ~MapIterator() {}
 
 			this_type& operator=(const iterator& x){
@@ -58,7 +57,7 @@ namespace ft
 			}
             
 			reference operator*() {
-				return array->_data;
+				return *array;
 			}
 
 			pointer operator->() {
