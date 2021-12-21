@@ -20,7 +20,7 @@ public:
     Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1,T2>()) { }
     Node(ft::pair<T1, T2>  data) : parent(0), left(0), right(0), color(RED), isNull(false) { _data = data; }
 
-    Node<T1, T2>& operator=(Node<T1, T2> & tmp)
+    Node<T1, T2>& operator=(Node<T1, T2>& tmp) 
     {
         parent = tmp.parent;
         left = tmp.left;
@@ -31,8 +31,109 @@ public:
         return *this;
     }
 
+    Node<T1, T2>* getNext()
+    {
+        Node<T1,T2>* biggerParent;
+
+        if (isNull)
+            return this;
+
+        if (right->isNull == true)
+        {
+            biggerParent = getBiggerParent(this);
+            if (biggerParent == 0)
+                return right;
+            else
+                return biggerParent;
+        }
+        else
+        {
+            return findSmallestSubtree(right);
+        }
+    }
+
+    Node<T1, T2>* getPrev()
+    {
+        Node<T1,T2>* lowerParent;
+
+        if (isNull)
+            return parent;
+        if (left->isNull == true && *this < *parent)
+        {
+            lowerParent = this;
+            while (lowerParent->parent)
+                lowerParent = lowerParent->parent;
+            while (lowerParent->left)
+            {
+                lowerParent = lowerParent->left;
+                if (lowerParent->left->isNull == true)
+                    break;
+            }
+            if (lowerParent == this)
+                return this;
+        }
+        
+        if (left->isNull == true)
+        {
+            lowerParent = getLowerParent(this);
+            if (lowerParent == 0)
+                return left;
+            else
+                return lowerParent;
+        }
+        else
+        {
+            return findLargestSubtree(left);
+        }
+    }
+
 private:
-    
+
+    Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree)
+    {
+        while (subtree->right->isNull == false)
+        {
+            subtree = subtree->right;
+        }
+        return subtree;
+    }
+
+    Node<T1, T2> *findSmallestSubtree(Node<T1, T2> *subtree)
+    {
+        while (subtree->left->isNull == false)
+        {
+            subtree = subtree->left;
+        }
+        return subtree;
+    }
+
+    Node<T1, T2>* getLowerParent(Node<T1,T2>* tmp)
+    {
+        Node<T1, T2>* parent;
+
+        parent = tmp->parent;
+        while (*tmp < *(parent))
+        {
+            parent = parent->parent;
+            if (parent == 0)
+                return 0;
+        }
+        return parent;
+    }
+
+    Node<T1, T2>* getBiggerParent(Node<T1,T2>* tmp)
+    {
+        Node<T1, T2>* parent;
+
+        parent = tmp->parent;
+        while (*tmp > *(parent))
+        {
+            parent = parent->parent;
+            if (parent == 0)
+                return 0;
+        }
+        return parent;
+    }
 };
 
 template <class T1, class T2>
@@ -71,15 +172,5 @@ bool operator>=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
     return !(lhs < rhs);
 }
 
-template <class T1, class T2>
-void contentSwap(Node<T1, T2> &lhs, Node<T1, T2> &rhs)
-{
-    ft::pair<T1,T2> tmp;
-    
-    tmp = lhs._data;
-    lhs._data = rhs._data;
-    rhs._data = tmp;
-
-}
 
 #endif

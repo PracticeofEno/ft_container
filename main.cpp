@@ -22,23 +22,20 @@ int main()
 	RBTree<int, int> rb(alloc);
 	ft::Map<int, int> map;
 
-	map.insert(ft::make_pair(300,300));
-	map.insert(ft::make_pair(300,300));
-	map.insert(ft::make_pair(150,150));
-	map.insert(ft::make_pair(580,580));
-	map.insert(ft::make_pair(600,600));
-	map.insert(ft::make_pair(550,550));
-	map.insert(ft::make_pair(530,530));
-	map.insert(ft::make_pair(570,570));
-/*
-	map.erase(580);
-	map.erase(550);
-	map.erase(570);
-	map.erase(600);
-	map.erase(530);
-	map.erase(150);
-	map.erase(300);
-	*/
-	
+	ft::Map<char,int> mymap;
+
+	mymap['a']=10;
+  	mymap['b']=20;
+  	mymap['c']=30;
+
+	ft::Map<char,int>::reverse_iterator rit = mymap.rbegin();
+	ft::Map<char,int>::reverse_iterator rend = mymap.rend();
+
+	while (rit != rend)
+	{
+		std::cout << rit->first << std::endl;
+		rit++;
+	}
+	std::cout << rit->first << std::endl;
 	return (0);
 }

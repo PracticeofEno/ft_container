@@ -20,13 +20,14 @@ namespace ft
 			typedef size_t 		size_type;
 			typedef ptrdiff_t 	difference_type;
 			typedef Category 	iterator_category;
+			typedef Node<typename value_type::first_type, typename value_type::second_type> node_pointer;
 			//template <class T2, class A> friend class vector;
 			
-			pointer array;
+			node_pointer array;
 		public:
 			MapIterator() : array(NULL) {}
-			MapIterator(const pointer elem) : array(elem) {}
-			MapIterator(const iterator& x) : array(const_cast<pointer>(x.array)) {}
+			MapIterator(const node_pointer elem) : array(elem) {}
+			MapIterator(const iterator& x) : array(const_cast<node_pointer>(x.array)) {}
 			virtual ~MapIterator() {}
 
 			this_type& operator=(const iterator& x){
@@ -36,54 +37,34 @@ namespace ft
 
 			this_type operator++(int){
 				this_type out(*this);
-
-				if (array->parent == 0)
-					array = array->right;
-				else
-				{
-					if (array->parent->left == array)
-						array = array->parent;
-					else
-					{
-						array = array->parent->parent;
-					}
-				}
+				array = array->getNext();
 				return out;
 			}
 
 			this_type& operator++() {
-				array = array + 1;
+				array = array->getNext();
 				return *this;
 			}
 
 			this_type operator--(int) {
 				this_type out(*this);
-				--this->array;
+				array = array->getPrev();
 				return out;
 			}
 
 			this_type& operator--() {
-				--this->array;
+				array = array->getPrev();
 				return *this;
 			}
             
-			this_type& operator-=(difference_type n){
-				this->array -= n;
-				return *this;
-			}
-
 			reference operator*() {
-				return *this->array;
+				return array->_data;
 			}
 
 			pointer operator->() {
-				return *(&(this->array));
+				return array;
 			}
-
-			reference operator[](difference_type n){
-				return (*(this->array + n));
-			}
-
+			
 			template <typename T2, typename P, typename R, class C>
 			friend inline bool operator==(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array == rhs.array);
@@ -91,22 +72,6 @@ namespace ft
 			template <typename T2, typename P, typename R, class C>
 			friend inline bool operator!=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
 				return (lhs.array != rhs.array);
-			}
-			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator<(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
-				return (lhs.array < rhs.array);
-			}
-			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator>(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
-				return (lhs.array > rhs.array);
-			}
-			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator<=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
-				return (lhs.array <= rhs.array);
-			}
-			template <typename T2, typename P, typename R, class C>
-			friend inline bool operator>=(const this_type& lhs, const MapIterator<T2, P, R, C>& rhs){
-				return (lhs.array >= rhs.array);
 			}
 	};
 }
