@@ -15,12 +15,20 @@ public:
     Node<T1, T2> *right;
     int color;
     bool isNull;
-    ft::pair<T1,T2> _data;
+    ft::pair<T1, T2> _data;
 
-    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1,T2>()) { }
-    Node(ft::pair<T1, T2>  data) : parent(0), left(0), right(0), color(RED), isNull(false) { _data = data; }
+    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1, T2>()) {}
+    Node(Node& tmp)
+    {
+        this->color = tmp.color;
+        this->isNull = tmp.isNull;
+        this->parent = tmp.parent;
+        this->left = tmp.left;
+        this->right = tmp.right;
+        this->_data = tmp._data;
+    }
 
-    Node<T1, T2>& operator=(Node<T1, T2>& tmp) 
+    Node& operator=(Node& tmp)
     {
         parent = tmp.parent;
         left = tmp.left;
@@ -33,7 +41,7 @@ public:
 
     Node<T1, T2>* getNext()
     {
-        Node<T1,T2>* biggerParent;
+        Node<T1, T2> *biggerParent;
 
         if (isNull)
             return this;
@@ -52,9 +60,9 @@ public:
         }
     }
 
-    Node<T1, T2>* getPrev()
+    Node<T1, T2> *getPrev()
     {
-        Node<T1,T2>* lowerParent;
+        Node<T1, T2> *lowerParent;
 
         if (isNull)
             return parent;
@@ -72,7 +80,7 @@ public:
             if (lowerParent == this)
                 return this;
         }
-        
+
         if (left->isNull == true)
         {
             lowerParent = getLowerParent(this);
@@ -87,8 +95,22 @@ public:
         }
     }
 
-private:
+    ft::pair<T1, T2>& operator*()
+    {
+        return _data;
+    }
 
+    ft::pair<T1, T2>* operator->()
+    {
+        return &_data;
+    }
+    
+    void setData(ft::pair<T1,T2> tmp)
+    {
+        _data = tmp;
+    }
+
+private:
     Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree)
     {
         while (subtree->right->isNull == false)
@@ -107,9 +129,9 @@ private:
         return subtree;
     }
 
-    Node<T1, T2>* getLowerParent(Node<T1,T2>* tmp)
+    Node<T1, T2> *getLowerParent(Node<T1, T2> *tmp)
     {
-        Node<T1, T2>* parent;
+        Node<T1, T2> *parent;
 
         parent = tmp->parent;
         while (*tmp < *(parent))
@@ -121,9 +143,9 @@ private:
         return parent;
     }
 
-    Node<T1, T2>* getBiggerParent(Node<T1,T2>* tmp)
+    Node<T1, T2> *getBiggerParent(Node<T1, T2> *tmp)
     {
-        Node<T1, T2>* parent;
+        Node<T1, T2> *parent;
 
         parent = tmp->parent;
         while (*tmp > *(parent))
@@ -134,6 +156,8 @@ private:
         }
         return parent;
     }
+
+    
 };
 
 template <class T1, class T2>
@@ -171,6 +195,5 @@ bool operator>=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
 {
     return !(lhs < rhs);
 }
-
 
 #endif

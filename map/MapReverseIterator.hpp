@@ -10,6 +10,7 @@ class MapReverseIterator {
 		typedef typename Iterator::size_type size_type;
 		typedef typename Iterator::difference_type difference_type;
 		typedef typename Iterator::iterator_category iterator_category;
+		typedef typename Iterator::value_type value_type;
 
 		MapReverseIterator() : current() { }
 		explicit MapReverseIterator (iterator_type it) : current(it) { }
@@ -25,10 +26,6 @@ class MapReverseIterator {
 
 		iterator_type base() const {
 			return this->current;
-		}
-
-		reference operator*() {
-			return *current;
 		}
 
 		MapReverseIterator& operator++() {
@@ -53,8 +50,12 @@ class MapReverseIterator {
 			return out;
 		}
 
-		pointer operator->() {
-			return &(operator*());
+		value_type& operator*() {
+			return *current;
+		}
+
+		value_type* operator->() {
+			return &(*current);
 		}		
 
 	protected: 

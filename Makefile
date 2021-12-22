@@ -1,5 +1,6 @@
 NAME = ft_container
-CFLAGS = -Wall -Wextra -Werror -std=c++98 
+CFLAGS = -Wall -Wextra -Werror 
+#-std=c++98 
 CC = clang++
 
 CFLAGS += -I ./Iterators/ -I./vector/ -I ./utils/ -I ./stack/ -I ./map/

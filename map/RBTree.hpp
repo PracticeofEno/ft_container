@@ -21,9 +21,11 @@ public:
 
     Node<T1, T2> *insert(ft::pair<T1, T2> data)
     {
+        Node<T1,T2> tmp2;
+        tmp2.setData(data);
         Node<T1, T2> *insertNode = alloc.allocate(1);
         Node<T1, T2> *tmp;
-        alloc.construct(insertNode, Node<T1, T2>(data));
+        alloc.construct(insertNode, tmp2);
 
         Node<T1, T2> *lastNode = 0;
         insertNode->left = &leaf;

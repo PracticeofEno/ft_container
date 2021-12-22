@@ -4,17 +4,19 @@
 #include <memory>
 #include <cstddef>
 
+
 namespace ft
 {
 	//T is Node<T1,T2>
 	template <typename T, typename Pointer, typename Reference, class Category = std::bidirectional_iterator_tag>
 	class MapIterator 
 	{
+		
 		public:
 			typedef MapIterator<T, Pointer, Reference> this_type;
 			typedef MapIterator<T, T*, T&> iterator;
 			typedef MapIterator<T, const T*, const T&> const_iterator;
-			typedef T 			value_type;
+			typedef T value_type;
 			typedef Pointer 	pointer;
 			typedef Reference 	reference;
 			typedef size_t 		size_type;
@@ -56,12 +58,12 @@ namespace ft
 				return *this;
 			}
             
-			reference operator*() {
-				return *array;
+			value_type& operator*() {
+				return array->_data;
 			}
 
-			pointer operator->() {
-				return array;
+			value_type* operator->() {
+				return &(array->_data);
 			}
 			
 			template <typename T2, typename P, typename R, class C>

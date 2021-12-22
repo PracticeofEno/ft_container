@@ -4,6 +4,7 @@
 #include "pair.hpp"
 #include "MapIterator.hpp"
 #include "MapReverseIterator.hpp"
+#include "node.hpp"
 #include <iostream>
 
 template <typename A, typename B>
@@ -31,8 +32,8 @@ namespace ft
         typedef typename allocator_type::const_pointer const_pointer;
         typedef size_t size_type;
 
-        typedef MapIterator<node_type, node_type*, node_type&> iterator;
-        typedef MapIterator<node_type, const node_type*, const node_type&> const_iterator;
+        typedef MapIterator<value_type, node_type*, node_type&> iterator;
+        typedef MapIterator<const value_type, const node_type*, const node_type&> const_iterator;
 		typedef MapReverseIterator<iterator> reverse_iterator;
 		typedef MapReverseIterator<const_iterator> const_reverse_iterator;
 
