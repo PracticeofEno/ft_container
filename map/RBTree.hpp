@@ -21,8 +21,7 @@ public:
 
     Node<T1, T2> *insert(ft::pair<T1, T2> data)
     {
-        Node<T1,T2> tmp2;
-        tmp2.setData(data);
+        Node<T1,T2> tmp2(data);
         Node<T1, T2> *insertNode = alloc.allocate(1);
         Node<T1, T2> *tmp;
         alloc.construct(insertNode, tmp2);
@@ -63,7 +62,7 @@ public:
         }
     }
 
-    Node<T1, T2> *search(const T1 &search, Node<T1, T2> **lastNode)
+    Node<T1, T2> *search(T1 search, Node<T1, T2> **lastNode)
     {
         Node<T1, T2> *node;
 
@@ -73,18 +72,18 @@ public:
             while (!(node->isNull))
             {
                 *lastNode = node;
-                if (node->_data.first == search)
+                if ((*(*node)).first == search)
                     return node;
-                else if (search < node->_data.first)
+                else if (search < (*(*node)).first)
                     node = node->left;
-                else if (search > node->_data.first)
+                else if (search > (*(*node)).first)
                     node = node->right;
             }
         }
         return (0);
     }
 
-    Node<T1, T2> *search(const T1 &search)
+    Node<T1, T2> *search(T1 search)
     {
         Node<T1, T2> *node;
         node = root;
@@ -92,11 +91,11 @@ public:
         {
             while (!(node->isNull))
             {
-                if (node->_data.first == search)
+                if ((*(*node)).first == search)
                     return node;
-                else if (search < node->_data.first)
+                else if (search < (*(*node)).first)
                     node = node->left;
-                else if (search > node->_data.first)
+                else if (search > (*(*node)).first)
                     node = node->right;
             }
         }
@@ -123,7 +122,7 @@ public:
         alloc = _alloc;
     }
 
-    Node<T1,T2>* begin()
+    Node<T1,T2>* begin() const
     {
         Node<T1,T2>* tmp;
 
@@ -137,7 +136,7 @@ public:
         return (0);
     }
 
-    Node<T1,T2>* end()
+    Node<T1,T2>* end() const
     {
         Node<T1,T2>* tmp;
 
@@ -453,64 +452,6 @@ private:
             insert->color = RED;
         }
     }
-    /*
-    void rotate(Node<T1, T2> *insert, Node<T1, T2> *parent, Node<T1, T2> *grand)
-    {
-        Node<T1, T2> *mid = 0;
-        Node<T1, T2> *low = 0;
-        Node<T1, T2> *high = 0;
-
-        if (grand->right == parent) // low is middle
-        {
-            if (insert < parent)
-            {
-                low = grand;
-                mid = insert;
-                high = parent;
-            }
-            else
-            {
-                low = grand;
-                mid = parent;
-                high = insert;
-            }
-        }
-        else // high is middle
-        {
-            if (insert < parent)
-            {
-                low = insert;
-                mid = parent;
-                high = grand;
-            }
-            else
-            {
-                low = parent;
-                mid = insert;
-                high = grand;
-            }
-        }
-
-        if (grand->parent != 0)
-        {
-            if (grand->parent->right == grand)
-                grand->parent->right = mid;
-            else
-                grand->parent->left = mid;
-        }
-        else
-            root = mid;
-        mid->parent = grand->parent;
-        mid->left = low;
-        mid->right = high;
-        low->parent = mid;
-        high->parent = mid;
-        setChildLeaf(low, high);
-        mid->color = BLACK;
-        low->color = RED;
-        high->color = RED;
-    }
-    */
 
     void changeColor(Node<T1, T2> *node)
     {
@@ -523,11 +464,8 @@ private:
 
     void changeNode(Node<T1,T2> *findNode, Node<T1, T2>* delNode)
     {
-        Node<T1, T2> copyA;
-        Node<T1, T2> copyB;
-
-        copyA = *findNode;
-        copyB = *delNode;
+        Node<T1, T2> copyA(*findNode);
+        Node<T1, T2> copyB(*delNode);
 
         nodeSwap(delNode, findNode);
         nodeSwap(&copyA, delNode);

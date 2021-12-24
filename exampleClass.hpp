@@ -26,6 +26,12 @@ inline bool
 operator<( const exampleClass& lhs, const exampleClass& rhs ) {
 	return (lhs.b < rhs.b);
 }
+
+inline bool
+operator>( const exampleClass& lhs, const exampleClass& rhs ) {
+	return (lhs.b > rhs.b);
+}
+
 inline bool
 operator==( const exampleClass& lhs, const exampleClass& rhs ) {
 	return (lhs.b == rhs.b && lhs.a == rhs.a);

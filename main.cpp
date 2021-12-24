@@ -15,6 +15,8 @@
 #include "compClass.hpp"
 #include "map/bvaletteTester_defines.hpp"
 
+
+
 class failedTest :  public std::exception {};
 
 template< typename K, typename T, typename Compare, typename Alloc>
@@ -154,11 +156,6 @@ bool print, std::string message = "" )	{
 		std::cout << ERROR_TITLE << "TEST FAILED !" << RESET_COLOR << std::endl;
 }
 
-/**	===========================================================================+
- *  ----------- TESTER FUNCTIONS ----------------------------------------------|
- **	===========================================================================+
-*/
-
 int	main_tester_map( void );
 int	test_map_instantiation( void );
 int	test_map_insert_erase( void );
@@ -204,12 +201,12 @@ test_map_instantiation( void )	{
 			ft::Map<std::string, float>		ft_c0;
 			std::map<std::string, float>	std_c0;
 
-			testMap<std::string, float>(ft_c0, std_c0, NOPRINT);
+			testMap<std::string, float>(ft_c0, std_c0, false);
 
 			ft::Map<float, int>		ft_c1;
 			std::map<float, int>	std_c1;
 
-			testMap<float, int>(ft_c1, std_c1, NOPRINT);
+			testMap<float, int>(ft_c1, std_c1, false);
 		}
 
 		std::map<char, int>	std_first;
@@ -229,13 +226,13 @@ test_map_instantiation( void )	{
 		{
 			ft::Map<char, int>		ft_c0(ft_first.begin(), ft_first.end());
 			std::map<char, int>		std_c0(std_first.begin(), std_first.end());
-			testMap<char, int>(ft_c0, std_c0, NOPRINT);
+			testMap<char, int>(ft_c0, std_c0, false);
 		}
 		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR ]" << RESET_COLOR << std::endl;
 		{
 			ft::Map<char, int>		ft_c0(ft_first);
 			std::map<char, int>		std_c0(std_first);
-			testMap<char, int>(ft_c0, std_c0, NOPRINT);
+			testMap<char, int>(ft_c0, std_c0, false);
 		}
 		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR with specific Compare function]" << RESET_COLOR << std::endl;
 		{
@@ -254,7 +251,7 @@ test_map_instantiation( void )	{
 			std::map<char, int, std::greater<char> >	std_c0(std_first_greater);
 			ft::Map<char, int,  std::greater<char> >	ft_c0(ft_first_greater);
 
-			testMap<char, int, std::greater<char> >(ft_c0, std_c0, NOPRINT);
+			testMap<char, int, std::greater<char> >(ft_c0, std_c0, false);
 		}
 		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR with Custom compare class]" << RESET_COLOR << std::endl;
 		{
@@ -274,7 +271,7 @@ test_map_instantiation( void )	{
 			std::map<char, int, compClass >	std_c0(std_first_greater);
 			ft::Map<char, int,  compClass >	ft_c0(ft_first_greater);
 
-			testMap<char, int, compClass >(ft_c0, std_c0, NOPRINT);
+			testMap<char, int, compClass >(ft_c0, std_c0, false);
 		}
 		std::cout << SUBTITLE << "[ CONSTRUCTOR WITH CUSTOM CLASS ]" << RESET_COLOR << std::endl;
 		{
@@ -286,34 +283,39 @@ test_map_instantiation( void )	{
 				std_c0.insert(std::pair<exampleClass, int>(exampleClass(i + ran), 42));
 				ft_c0.insert(ft::pair<exampleClass, int>(exampleClass(i + ran), 42));
 			}
-			testMap<exampleClass, int>(ft_c0, std_c0, NOPRINT);
+			testMap<exampleClass, int>(ft_c0, std_c0, false);
 		}
 	}
 	return (0);
 }
 
+bool	testBool(bool b, const char * file, int const lineNo, int const loopIter )	{
+	if (b == true)
+		std::cout << "[ TEST PASSED: no diff ] \t \342\234\205" << std::endl;
+	else	{
+		std::cout << ERROR_TITLE << "[ FAILURE at " << file << ":" << lineNo << "]" << RESET_COLOR << BLINK << " \t \342\235\214" << RESET_COLOR << std::endl;
+		if (loopIter != -1)
+			std::cout << ERROR_TITLE << " loop iteration = " << loopIter << "." << RESET_COLOR << " \t \342\235\214" << std::endl;
+		if (DEBUG_MODE < 1)
+			throw failedTest();
+	}
+	return (b);
+}
+
+
 int main()
 {
+	ft::Map<char, int>	ft_first;
 
-	//std::allocator<ft::pair<int, int> > alloc;
-	//RBTree<int, int> rb(alloc);
-	ft::Map<int, int> map;
+	ft::Map<char, int>::iterator it;
 
-	ft::Map<char,int> mymap;
+	ft::Map<char, int>::iterator it2(it);
+	/*
+	ft_first.insert(ft::pair<char, int>('a',10));
+	ft_first.insert(ft::pair<char, int>('b',30));
+	ft_first.insert(ft::pair<char, int>('c',50));
+	ft_first.insert(ft::pair<char, int>('d',70));
+	*/
 
-	mymap.insert(ft::make_pair<char,int>('a',10));
-	mymap.insert(ft::make_pair<char,int>('b',20));
-	mymap.insert(ft::make_pair<char,int>('c',30));
-
-	ft::Map<char,int>::reverse_iterator rit = mymap.rbegin();
-	ft::Map<char,int>::reverse_iterator rend = mymap.rend();
-
-	while (rit != rend)
-	{
-		std::cout << (*rit).first << std::endl;
-		rit++;
-	}
-	std::cout << rit->first << std::endl;
-	
 	return (0);
 }

@@ -63,7 +63,7 @@ namespace ft
 
         ~Map()
         {
-            clear();
+            //clear();
         }
         ///////////////////////////////////////////////////////////////////
 
@@ -83,19 +83,19 @@ namespace ft
 
         //////        Modifiers         ///////////
         //////        insert            ///////////
-        ft::pair<iterator, bool> insert(const value_type& val)
+        pair<iterator, bool> insert(const value_type& val)
         {
             Node<Key,T> *tmp;
 
             tmp = _rb.search(val.first, &tmp);
             if (tmp) // key is exist
             {
-                return ft::make_pair(iterator(tmp), true);
+                return ft::make_pair<iterator, bool>(iterator(tmp), true);
             }
             else  // non exist
             {
                 _size = _size + 1;
-                return ft::make_pair(iterator(_rb.insert(val)), false);
+                return ft::make_pair<iterator, bool>(iterator(_rb.insert(val)), false);
             }
         }
 
@@ -120,14 +120,14 @@ namespace ft
         {
             while (first != last)
             {
-                _rb.insert( (*first)._data );
+                _rb.insert(*first);
             }
         }
         ////////////////////////////////////////////////////////////
         ///////////        erase           /////////////////////
         void erase (iterator position)
         {
-            _rb.erase((*position)._data.first);
+            _rb.erase((*position).first);
         }
 
         size_type erase (const key_type& k)
@@ -150,7 +150,7 @@ namespace ft
         {
             while (first != last)
             {
-                _rb.erase( (*first)._data.first );
+                _rb.erase( (*first).first );
                 first++;
             }
         }
@@ -178,7 +178,7 @@ namespace ft
 
         const_iterator begin() const
         {
-            return iterator(_rb.begin());
+            return const_iterator(_rb.begin());
         }
 
         iterator end()
@@ -188,7 +188,7 @@ namespace ft
 
         const_iterator end() const
         {
-            return iterator(_rb.end());
+            return const_iterator(_rb.end());
         }
 
         reverse_iterator rbegin()
@@ -235,7 +235,9 @@ namespace ft
         //////////////     operations ////////////////////////////
         iterator find (const key_type& k)
         {
-            Node<Key,T>* tmp(_rb.search(k));
+            key_type tmp2 = k;
+
+            Node<Key,T>* tmp(_rb.search(tmp2));
             if (tmp == 0)
                 return end();
             else
@@ -245,6 +247,7 @@ namespace ft
         const_iterator find (const key_type& k) const
         {
             Node<Key,T>* tmp(_rb.search(k));
+
             if (tmp == 0)
                 return end();
             else
@@ -337,7 +340,7 @@ namespace ft
         
         mapped_type& operator[] (const key_type& k)
         {
-            return (*((this->insert(make_pair(k,mapped_type()))).first))._data.second;
+            return (*((this->insert(make_pair(k,mapped_type()))).first)).second;
         }
 
         allocator_type get_allocator() const

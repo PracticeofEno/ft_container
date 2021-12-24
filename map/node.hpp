@@ -17,18 +17,11 @@ public:
     bool isNull;
     ft::pair<T1, T2> _data;
 
-    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1, T2>()) {}
-    Node(Node& tmp)
-    {
-        this->color = tmp.color;
-        this->isNull = tmp.isNull;
-        this->parent = tmp.parent;
-        this->left = tmp.left;
-        this->right = tmp.right;
-        this->_data = tmp._data;
-    }
+    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false) {}
+    Node(Node& tmp) : parent(tmp.parent), left(tmp.left), right(tmp.right), color(tmp.color), isNull(tmp.isNull), _data(tmp._data) { }
+    Node(ft::pair<T1,T2> tmp) : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(tmp) {}
 
-    Node& operator=(Node& tmp)
+    Node& operator=(const Node& tmp)
     {
         parent = tmp.parent;
         left = tmp.left;
@@ -39,7 +32,7 @@ public:
         return *this;
     }
 
-    Node<T1, T2>* getNext()
+    const Node<T1, T2>* getNext() const
     {
         Node<T1, T2> *biggerParent;
 
@@ -60,7 +53,7 @@ public:
         }
     }
 
-    Node<T1, T2> *getPrev()
+    const Node<T1, T2> *getPrev() const
     {
         Node<T1, T2> *lowerParent;
 
@@ -68,7 +61,7 @@ public:
             return parent;
         if (left->isNull == true && *this < *parent)
         {
-            lowerParent = this;
+            lowerParent = const_cast<Node<T1,T2> *>(this);
             while (lowerParent->parent)
                 lowerParent = lowerParent->parent;
             while (lowerParent->left)
@@ -83,7 +76,7 @@ public:
 
         if (left->isNull == true)
         {
-            lowerParent = getLowerParent(this);
+            lowerParent = getLowerParent(const_cast<Node<T1,T2>*>(this));
             if (lowerParent == 0)
                 return left;
             else
@@ -104,14 +97,19 @@ public:
     {
         return &_data;
     }
-    
+
     void setData(ft::pair<T1,T2> tmp)
     {
         _data = tmp;
     }
 
+    ft::pair<T1,T2>& getData()
+    {
+        return _data;
+    }
+
 private:
-    Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree)
+    Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree) const
     {
         while (subtree->right->isNull == false)
         {
@@ -120,7 +118,7 @@ private:
         return subtree;
     }
 
-    Node<T1, T2> *findSmallestSubtree(Node<T1, T2> *subtree)
+    Node<T1, T2> *findSmallestSubtree(Node<T1, T2> *subtree) const
     {
         while (subtree->left->isNull == false)
         {
@@ -129,7 +127,7 @@ private:
         return subtree;
     }
 
-    Node<T1, T2> *getLowerParent(Node<T1, T2> *tmp)
+    Node<T1, T2> *getLowerParent(Node<T1, T2> *tmp) const
     {
         Node<T1, T2> *parent;
 
@@ -143,7 +141,7 @@ private:
         return parent;
     }
 
-    Node<T1, T2> *getBiggerParent(Node<T1, T2> *tmp)
+    Node<T1, T2> *getBiggerParent(const Node<T1, T2> *tmp) const
     {
         Node<T1, T2> *parent;
 

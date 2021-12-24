@@ -38,23 +38,23 @@ namespace ft
 
 			this_type operator++(int){
 				this_type out(*this);
-				array = array->getNext();
+				array = const_cast<pointer>(array->getNext());
 				return out;
 			}
 
 			this_type& operator++() {
-				array = array->getNext();
+				array = const_cast<pointer>(array->getNext());
 				return *this;
 			}
 
 			this_type operator--(int) {
 				this_type out(*this);
-				array = array->getPrev();
+				array = const_cast<pointer>(array->getPrev());
 				return out;
 			}
 
 			this_type& operator--() {
-				array = array->getPrev();
+				array = const_cast<pointer>(array->getPrev());
 				return *this;
 			}
             
