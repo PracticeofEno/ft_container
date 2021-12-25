@@ -83,23 +83,23 @@ namespace ft
 
         //////        Modifiers         ///////////
         //////        insert            ///////////
-        pair<iterator, bool> insert(const value_type& val)
+        ft::pair<iterator, bool> insert(value_type val)
         {
             Node<Key,T> *tmp;
 
             tmp = _rb.search(val.first, &tmp);
             if (tmp) // key is exist
             {
-                return ft::make_pair<iterator, bool>(iterator(tmp), true);
+                return ft::make_pair(iterator(tmp), true);
             }
             else  // non exist
             {
                 _size = _size + 1;
-                return ft::make_pair<iterator, bool>(iterator(_rb.insert(val)), false);
+                return ft::make_pair(iterator(_rb.insert(val)), false);
             }
         }
 
-        iterator insert (iterator position, const value_type& val)
+        iterator insert (iterator position, value_type val)
         {
             Node<Key,T> *tmp;
             (void)position;
@@ -251,7 +251,7 @@ namespace ft
             if (tmp == 0)
                 return end();
             else
-                return iterator(tmp);
+                return const_iterator(tmp);
         }
 
         size_type count (const key_type& k) const
@@ -289,7 +289,7 @@ namespace ft
             {
                 if (_comp(root->_data.first, k) == false)
                 {
-                    return iterator(root);
+                    return const_iterator(root);
                 }
             }
             return end();
@@ -325,7 +325,7 @@ namespace ft
                 if (_comp(root->_data.first, k) == false)
                 {
                     if (root->_data.first != k)
-                        return iterator(root);
+                        return const_iterator(root);
                     else
                         root = root->right;
                 }

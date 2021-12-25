@@ -1,5 +1,5 @@
 NAME = ft_container
-CFLAGS = -Wall -Wextra -Werror 
+CFLAGS = -Wall -Wextra -Werror -std=c++98
 #-std=c++98 
 CC = clang++
 

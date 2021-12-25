@@ -17,9 +17,9 @@ public:
     bool isNull;
     ft::pair<T1, T2> _data;
 
-    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false) {}
-    Node(Node& tmp) : parent(tmp.parent), left(tmp.left), right(tmp.right), color(tmp.color), isNull(tmp.isNull), _data(tmp._data) { }
-    Node(ft::pair<T1,T2> tmp) : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(tmp) {}
+    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(ft::pair<T1,T2>()){}
+    Node(const Node& tmp) : parent(tmp.parent), left(tmp.left), right(tmp.right), color(tmp.color), isNull(tmp.isNull), _data(tmp._data) { }
+    Node(const ft::pair<T1,T2> tmp) : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(tmp) {}
 
     Node& operator=(const Node& tmp)
     {

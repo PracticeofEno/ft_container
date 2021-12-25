@@ -24,7 +24,8 @@ public:
         Node<T1,T2> tmp2(data);
         Node<T1, T2> *insertNode = alloc.allocate(1);
         Node<T1, T2> *tmp;
-        alloc.construct(insertNode, tmp2);
+        alloc.construct(insertNode, *insertNode);
+        insertNode->_data = data;
 
         Node<T1, T2> *lastNode = 0;
         insertNode->left = &leaf;
@@ -62,7 +63,7 @@ public:
         }
     }
 
-    Node<T1, T2> *search(T1 search, Node<T1, T2> **lastNode)
+    Node<T1, T2> *search(T1 search, Node<T1, T2> **lastNode) const
     {
         Node<T1, T2> *node;
 
@@ -83,7 +84,7 @@ public:
         return (0);
     }
 
-    Node<T1, T2> *search(T1 search)
+    Node<T1, T2> *search(T1 search) const
     {
         Node<T1, T2> *node;
         node = root;

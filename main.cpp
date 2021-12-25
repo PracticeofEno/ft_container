@@ -15,7 +15,7 @@
 #include "compClass.hpp"
 #include "map/bvaletteTester_defines.hpp"
 
-
+/*
 
 class failedTest :  public std::exception {};
 
@@ -302,20 +302,14 @@ bool	testBool(bool b, const char * file, int const lineNo, int const loopIter )	
 	return (b);
 }
 
+*/
 
 int main()
 {
 	ft::Map<char, int>	ft_first;
-
-	ft::Map<char, int>::iterator it;
-
-	ft::Map<char, int>::iterator it2(it);
-	/*
 	ft_first.insert(ft::pair<char, int>('a',10));
 	ft_first.insert(ft::pair<char, int>('b',30));
 	ft_first.insert(ft::pair<char, int>('c',50));
 	ft_first.insert(ft::pair<char, int>('d',70));
-	*/
-
 	return (0);
 }
