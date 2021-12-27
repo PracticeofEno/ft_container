@@ -45,7 +45,7 @@ namespace ft
         }
 
         template <class InputIterator>
-        Map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp)
+        Map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _size(0)
         { 
             _rb.setAlloc(alloc);
             _size = 0;
@@ -56,7 +56,7 @@ namespace ft
             }
         }
 
-        Map (const Map& x)
+        Map (const Map& x) : _size(0)
         {
             this->insert(x.begin(), x.end());
         }
@@ -120,7 +120,8 @@ namespace ft
         {
             while (first != last)
             {
-                _rb.insert(*first);
+                insert(*first);
+                first++;
             }
         }
         ////////////////////////////////////////////////////////////
@@ -163,11 +164,34 @@ namespace ft
 
         void clear()
         {
-            while (_size != 0)
+            int k = 0;
+            int index = 0;
+            iterator itstart = begin();
+            iterator itend = end();
+            while (itstart != itend)
             {
-                erase(_rb.root->_data.first);
+                k++;
+                itstart++;
             }
+
+            iterator arr[k];
+            itstart = begin();
+            itend = end();
+            while (itstart != itend)
+            {
+                arr[index] = itstart;
+                index++;
+                itstart++;
+            }
+            while (index)
+            {
+                _alloc.deallocate(arr[index - 1].array, 1);
+                index--;
+            }
+            _size = 0;
+            _rb.root = 0;
         }
+        
         //////////////////////////////////////////////////////////
 
         /////////////////    iterator         //////////////////////
@@ -265,76 +289,84 @@ namespace ft
 
         iterator lower_bound (const key_type& k)
         {
-            Node<Key, T>* root = _rb.root;
+            iterator start;
+            iterator last;
 
-            while (!root->isNull)
+            start = begin();
+            last = end();
+            while (start != last)
             {
-                if (_comp(root->_data.first, k) == false)
-                {
-                    return iterator(root);
-                }
-                else
-                {
-                    root = root->right;
-                }
+                if (_comp(start->first, k) == false)
+                    break;
+                start++;
             }
-            return end();
+            return start;
         }
 
         const_iterator lower_bound (const key_type& k) const
         {
-            Node<Key, T>* root = _rb.root;
+            const_iterator start;
+            const_iterator last;
 
-            while (!root->isNull)
+            start = begin();
+            last = end();
+            while (start != last)
             {
-                if (_comp(root->_data.first, k) == false)
-                {
-                    return const_iterator(root);
-                }
+                if (_comp(start->first, k) == false)
+                    break;
+                start++;
             }
-            return end();
+            return start;
         }
 
         iterator upper_bound (const key_type& k)
         {
-            Node<Key, T>* root = _rb.root;
+            iterator start;
+            iterator last;
 
-            while (!root->isNull)
+            start = begin();
+            last = end();
+
+            while (start != last)
             {
-                if (_comp(root->_data.first, k) == false)
+                if (_comp(start->first, k) == false)
                 {
-                    if (root->_data.first != k)
-                        return iterator(root);
+                    if (start->first != k)
+                        break;
                     else
-                        root = root->right;
+                        start++;
                 }
                 else
                 {
-                    root = root->right;
+                    start++;
                 }
             }
-            return end();
+            return start;
         }
 
         const_iterator upper_bound (const key_type& k) const
         {
-            Node<Key, T>* root = _rb.root;
+            const_iterator start;
+            const_iterator last;
 
-            while (!root->isNull)
+            start = begin();
+            last = end();
+
+            while (start != last)
             {
-                if (_comp(root->_data.first, k) == false)
+                if (_comp(start->first, k) == false)
                 {
-                    if (root->_data.first != k)
-                        return const_iterator(root);
+                    if (start->first != k)
+                        break;
                     else
-                        root = root->right;
+                        start++;
                 }
                 else
                 {
-                    root = root->right;
+                    start++;
                 }
             }
-            return end();
+            return start;
         }
 
         

@@ -25,6 +25,11 @@ public:
         Node<T1, T2> *insertNode = alloc.allocate(1);
         Node<T1, T2> *tmp;
         alloc.construct(insertNode, *insertNode);
+        insertNode->parent = 0;
+        insertNode->right = 0;
+        insertNode->left = 0;
+        insertNode->isNull = 0;
+        insertNode->color = RED;
         insertNode->_data = data;
 
         Node<T1, T2> *lastNode = 0;
@@ -128,11 +133,14 @@ public:
         Node<T1,T2>* tmp;
 
         tmp = root;
-        while (tmp->isNull == false)
+        if (tmp != 0)
         {
-            if (tmp->left->isNull == true)
-                return tmp;
-            tmp = tmp->left;
+            while (tmp->isNull == false)
+            {
+                if (tmp->left->isNull == true)
+                    return tmp;
+                tmp = tmp->left;
+            }
         }
         return (0);
     }

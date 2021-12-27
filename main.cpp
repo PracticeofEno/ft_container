@@ -15,7 +15,7 @@
 #include "compClass.hpp"
 #include "map/bvaletteTester_defines.hpp"
 
-/*
+#define NOPRINT ""
 
 class failedTest :  public std::exception {};
 
@@ -75,12 +75,10 @@ putMap( std::map<K, T, Compare, Alloc> const & container, int errorPos = -1 )	{
 
 
 template<	class K,
-			class T,
-			class Compare = std::less<K>,
-			class ftAlloc = std::allocator<ft::pair<const K, T> >,
-			class stdAlloc = std::allocator<std::pair<const K, T> > >
+			class T
+			>
 void
-testMap( ft::Map<K, T, Compare, ftAlloc> const & ft_c, std::map<K, T, Compare, stdAlloc> const &std_c,
+testMap( ft::Map<K, T> const & ft_c, std::map<K, T> const &std_c,
 bool print, std::string message = "" )	{
 
 	bool	success = true;
@@ -111,11 +109,11 @@ bool print, std::string message = "" )	{
 	if (ft_c.size() > 0)
 	{
 		int i = 0;
-		typename ft::Map<K, T, Compare, ftAlloc>::const_iterator	ft_it = ft_c.begin();
-		typename ft::Map<K, T, Compare, ftAlloc>::const_iterator	ft_ite = ft_c.end();
+		typename ft::Map<K, T>::const_iterator	ft_it = ft_c.begin();
+		typename ft::Map<K, T>::const_iterator	ft_ite = ft_c.end();
 
-		typename std::map<K, T, Compare, stdAlloc>::const_iterator	std_it = std_c.begin();
-		typename std::map<K, T, Compare, stdAlloc>::const_iterator	std_ite = std_c.end();
+		typename std::map<K, T>::const_iterator	std_it = std_c.begin();
+		typename std::map<K, T>::const_iterator	std_ite = std_c.end();
 		while (ft_it != ft_ite && std_it != std_ite)	{
 
 			if(ft_it->first != std_it->first || ft_it->second != std_it->second)	{
@@ -156,6 +154,19 @@ bool print, std::string message = "" )	{
 		std::cout << ERROR_TITLE << "TEST FAILED !" << RESET_COLOR << std::endl;
 }
 
+bool	testBool(bool b, const char * file, int const lineNo, int const loopIter )	{
+	if (b == true)
+		std::cout << "[ TEST PASSED: no diff ] \t \342\234\205" << std::endl;
+	else	{
+		std::cout << ERROR_TITLE << "[ FAILURE at " << file << ":" << lineNo << "]" << RESET_COLOR << BLINK << " \t \342\235\214" << RESET_COLOR << std::endl;
+		if (loopIter != -1)
+			std::cout << ERROR_TITLE << " loop iteration = " << loopIter << "." << RESET_COLOR << " \t \342\235\214" << std::endl;
+		if (DEBUG_MODE < 1)
+			throw failedTest();
+	}
+	return (b);
+}
+
 int	main_tester_map( void );
 int	test_map_instantiation( void );
 int	test_map_insert_erase( void );
@@ -188,128 +199,119 @@ int	test_map_reverseIterator( void );
 int	test_map_reverse( void );
 int	test_map_element_access( void );
 
+void
+test_map_const_equal_range(int findKey, std::map<int, exampleClass> const std_c0, ft::Map<int, exampleClass> const ft_c0)	{
+
+		std::cout << HEADER_TITLE << "[ Test equal_range with a value added previously to the map ]" << RESET_COLOR << std::endl;
+		std::pair< std::map<int, exampleClass>::const_iterator, std::map<int, exampleClass>::const_iterator>	std_c0_ret = std_c0.equal_range(findKey);
+		ft::pair< ft::Map<int, exampleClass>::const_iterator, ft::Map<int, exampleClass>::const_iterator>		ft_c0_ret = ft_c0.equal_range(findKey);
+
+		if (std_c0_ret.first == std_c0.end())
+			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
+		if (std_c0_ret.second == std_c0.end())
+			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
+		if (ft_c0_ret.first != ft_c0.end())
+			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
+				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
+		if (ft_c0_ret.second != ft_c0.end())
+			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
+				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
+}
 
 int
-test_map_instantiation( void )	{
-
+test_map_equal_range( void )	{
 	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
-	std::cout << TITLE << "~~~~ To see constructor calls, compile with " << RESET_COLOR << "-> make debug_mode=1 re f "<< std::endl;
-
 	{
-		std::cout << SUBTITLE << "[ DEFAULT CONSTRUCTOR ]" << RESET_COLOR << std::endl;
-		{
-			ft::Map<std::string, float>		ft_c0;
-			std::map<std::string, float>	std_c0;
+		size_t			valgrind_factor = (VALGRIND_MODE == true) ? 100 : 1;
+		size_t			testSize = 5000 / valgrind_factor;
+		int findKey = 42;
+		std::cout << HEADER_TITLE << "[ Test equal_range function with map of " << testSize << " int key and exampleClass mapped value ]" << RESET_COLOR << std::endl;
 
-			testMap<std::string, float>(ft_c0, std_c0, false);
-
-			ft::Map<float, int>		ft_c1;
-			std::map<float, int>	std_c1;
-
-			testMap<float, int>(ft_c1, std_c1, false);
+		std::vector<ft::pair<int, exampleClass> >	ft_val_0(testSize);
+		std::vector<std::pair<int, exampleClass> >	std_val_0(testSize);
+		srand(time(NULL));
+		for (size_t i = 0; i < testSize; i++)	{
+			int val = rand() % testSize;
+			if (i == testSize / 2)
+				findKey = val;
+			ft_val_0[i] = ft::make_pair(val, exampleClass(i));
+			std_val_0[i] = std::make_pair(val, i);
 		}
 
-		std::map<char, int>	std_first;
-		std_first.insert(std::pair<char, int>('a',10));
-		std_first.insert(std::pair<char, int>('b',30));
-		std_first.insert(std::pair<char, int>('c',50));
-		std_first.insert(std::pair<char, int>('d',70));
+		std::map<int, exampleClass>	std_c0(std_val_0.begin(), std_val_0.end());
+		ft::Map<int, exampleClass>	ft_c0(ft_val_0.begin(), ft_val_0.end());
+		testMap(ft_c0, std_c0, NOPRINT);
 
-		ft::Map<char, int>	ft_first;
-		ft_first.insert(ft::pair<char, int>('a',10));
-		ft_first.insert(ft::pair<char, int>('b',30));
-		ft_first.insert(ft::pair<char, int>('c',50));
-		ft_first.insert(ft::pair<char, int>('d',70));
+		std::cout << HEADER_TITLE << "[ Test equal_range with a value added previously to the map ]" << RESET_COLOR << std::endl;
+		std::pair< std::map<int, exampleClass>::iterator, std::map<int, exampleClass>::iterator>	std_c0_ret = std_c0.equal_range(findKey);
+		ft::pair< ft::Map<int, exampleClass>::iterator, ft::Map<int, exampleClass>::iterator>		ft_c0_ret = ft_c0.equal_range(findKey);
 
+		if (std_c0_ret.first == std_c0.end())
+			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
+		if (std_c0_ret.second == std_c0.end())
+			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
+		if (ft_c0_ret.first != ft_c0.end())
+			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
+				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
+		if (ft_c0_ret.second != ft_c0.end())
+			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
+				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
 
-		std::cout << SUBTITLE << "[ RANGE CONSTRUCTOR ]" << RESET_COLOR << std::endl;
-		{
-			ft::Map<char, int>		ft_c0(ft_first.begin(), ft_first.end());
-			std::map<char, int>		std_c0(std_first.begin(), std_first.end());
-			testMap<char, int>(ft_c0, std_c0, false);
-		}
-		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR ]" << RESET_COLOR << std::endl;
-		{
-			ft::Map<char, int>		ft_c0(ft_first);
-			std::map<char, int>		std_c0(std_first);
-			testMap<char, int>(ft_c0, std_c0, false);
-		}
-		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR with specific Compare function]" << RESET_COLOR << std::endl;
-		{
-			std::map<char, int, std::greater<char> >	std_first_greater;
-			std_first_greater.insert(std::pair<char, int>('a',10));
-			std_first_greater.insert(std::pair<char, int>('b',30));
-			std_first_greater.insert(std::pair<char, int>('c',50));
-			std_first_greater.insert(std::pair<char, int>('d',70));
+		test_map_const_equal_range(findKey, std_c0, ft_c0);
 
-			ft::Map<char, int, std::greater<char> >	ft_first_greater;
-			ft_first_greater.insert(ft::pair<char, int>('a',10));
-			ft_first_greater.insert(ft::pair<char, int>('b',30));
-			ft_first_greater.insert(ft::pair<char, int>('c',50));
-			ft_first_greater.insert(ft::pair<char, int>('d',70));
+		std::cout << HEADER_TITLE << "[ Test equal_range with a value absent from the map (higher than the highest key)]" << RESET_COLOR << std::endl;
+		std_c0_ret = std_c0.equal_range(testSize * 2);
+		ft_c0_ret = ft_c0.equal_range(testSize * 2);
 
-			std::map<char, int, std::greater<char> >	std_c0(std_first_greater);
-			ft::Map<char, int,  std::greater<char> >	ft_c0(ft_first_greater);
+		if (std_c0_ret.first == std_c0.end())
+			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
+		if (std_c0_ret.second == std_c0.end())
+			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
+		if (ft_c0_ret.first != ft_c0.end())
+			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
+				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
+		if (ft_c0_ret.second != ft_c0.end())
+			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
+				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
 
-			testMap<char, int, std::greater<char> >(ft_c0, std_c0, false);
-		}
-		std::cout << SUBTITLE << "[ COPY CONSTRUCTOR with Custom compare class]" << RESET_COLOR << std::endl;
-		{
+		std::cout << HEADER_TITLE << "[ Test equal_range with a value absent from the map (lower than the lowest key)]" << RESET_COLOR << std::endl;
+		std_c0_ret = std_c0.equal_range(-42);
+		ft_c0_ret = ft_c0.equal_range(-42);
 
-			std::map<char, int, compClass>	std_first_greater;
-			std_first_greater.insert(std::pair<char, int>('a',10));
-			std_first_greater.insert(std::pair<char, int>('b',30));
-			std_first_greater.insert(std::pair<char, int>('c',50));
-			std_first_greater.insert(std::pair<char, int>('d',70));
+		if (std_c0_ret.first == std_c0.end())
+			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
+		if (std_c0_ret.second == std_c0.end())
+			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
+		if (ft_c0_ret.first != ft_c0.end())
+			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
+				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
+		if (ft_c0_ret.second != ft_c0.end())
+			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
+				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
 
-			ft::Map<char, int, compClass>	ft_first_greater;
-			ft_first_greater.insert(ft::pair<char, int>('a',10));
-			ft_first_greater.insert(ft::pair<char, int>('b',30));
-			ft_first_greater.insert(ft::pair<char, int>('c',50));
-			ft_first_greater.insert(ft::pair<char, int>('d',70));
+		std::cout << HEADER_TITLE << "[ Test equal_range with empty map ]" << RESET_COLOR << std::endl;
+		ft_c0.clear();
+		std_c0.clear();
+		testMap(ft_c0, std_c0, NOPRINT);
 
-			std::map<char, int, compClass >	std_c0(std_first_greater);
-			ft::Map<char, int,  compClass >	ft_c0(ft_first_greater);
+		std_c0_ret = std_c0.equal_range(42);
+		ft_c0_ret = ft_c0.equal_range(42);
 
-			testMap<char, int, compClass >(ft_c0, std_c0, false);
-		}
-		std::cout << SUBTITLE << "[ CONSTRUCTOR WITH CUSTOM CLASS ]" << RESET_COLOR << std::endl;
-		{
-			std::map<exampleClass, int>	std_c0;
-			ft::Map<exampleClass, int>	ft_c0;
-
-			for (size_t i = 0; i < 10; i++)	{
-				int ran = rand() % 10000;
-				std_c0.insert(std::pair<exampleClass, int>(exampleClass(i + ran), 42));
-				ft_c0.insert(ft::pair<exampleClass, int>(exampleClass(i + ran), 42));
-			}
-			testMap<exampleClass, int>(ft_c0, std_c0, false);
-		}
+		if (std_c0_ret.first == std_c0.end())
+			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
+		if (std_c0_ret.second == std_c0.end())
+			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
+		if (ft_c0_ret.first != ft_c0.end())
+			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
+				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
+		if (ft_c0_ret.second != ft_c0.end())
+			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
+				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
 	}
 	return (0);
 }
-
-bool	testBool(bool b, const char * file, int const lineNo, int const loopIter )	{
-	if (b == true)
-		std::cout << "[ TEST PASSED: no diff ] \t \342\234\205" << std::endl;
-	else	{
-		std::cout << ERROR_TITLE << "[ FAILURE at " << file << ":" << lineNo << "]" << RESET_COLOR << BLINK << " \t \342\235\214" << RESET_COLOR << std::endl;
-		if (loopIter != -1)
-			std::cout << ERROR_TITLE << " loop iteration = " << loopIter << "." << RESET_COLOR << " \t \342\235\214" << std::endl;
-		if (DEBUG_MODE < 1)
-			throw failedTest();
-	}
-	return (b);
-}
-
-*/
 
 int main()
 {
-	ft::Map<char, int>	ft_first;
-	ft_first.insert(ft::pair<char, int>('a',10));
-	ft_first.insert(ft::pair<char, int>('b',30));
-	ft_first.insert(ft::pair<char, int>('c',50));
-	ft_first.insert(ft::pair<char, int>('d',70));
-	return (0);
+	test_map_equal_range();
 }
