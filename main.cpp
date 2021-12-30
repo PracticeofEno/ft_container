@@ -199,119 +199,75 @@ int	test_map_reverseIterator( void );
 int	test_map_reverse( void );
 int	test_map_element_access( void );
 
+template< typename Key, typename T>
 void
-test_map_const_equal_range(int findKey, std::map<int, exampleClass> const std_c0, ft::Map<int, exampleClass> const ft_c0)	{
+test_value_compare(ft::Map<Key, T>& ft_c0, std::map<Key, T>& std_c0)	{
 
-		std::cout << HEADER_TITLE << "[ Test equal_range with a value added previously to the map ]" << RESET_COLOR << std::endl;
-		std::pair< std::map<int, exampleClass>::const_iterator, std::map<int, exampleClass>::const_iterator>	std_c0_ret = std_c0.equal_range(findKey);
-		ft::pair< ft::Map<int, exampleClass>::const_iterator, ft::Map<int, exampleClass>::const_iterator>		ft_c0_ret = ft_c0.equal_range(findKey);
+	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
+	std::pair<Key, T>	std_highest = *(--std_c0.end());  	// key value of last element
+	ft::pair<Key, T>	ft_highest = *(--ft_c0.end());    	// key value of last element
 
-		if (std_c0_ret.first == std_c0.end())
-			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
-		if (std_c0_ret.second == std_c0.end())
-			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
-		if (ft_c0_ret.first != ft_c0.end())
-			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
-				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
-		if (ft_c0_ret.second != ft_c0.end())
-			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
-				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
+	std::cout << HEADER_TITLE << "[ Go though map while using value_comp() to check cursor value against the highest value ]" << RESET_COLOR << std::endl;
+	std::map<char,int>::iterator	std_it = std_c0.begin();
+	ft::Map<char,int>::iterator		ft_it = ft_c0.begin();
+	do {
+		testBool(std_c0.value_comp()(*std_it++,  std_highest) == true
+				&& ft_c0.value_comp()(*ft_it++, ft_highest) == true,"", 0, 0);
+	} while ( std_it != --std_c0.end() && ft_it != --ft_c0.end());
+	testBool((std_c0.value_comp()(*std_it++,  std_highest) == false)
+			&& (ft_c0.value_comp()(*ft_it++, ft_highest) == false),"", 0, 0);
+	testBool((std_c0.value_comp()((*std_it),  (*std_it--)) == false
+			&& ft_c0.value_comp()((*ft_it), (*ft_it--)) == false),"", 0, 0);
+}
+
+template< typename Key, typename T>
+void
+test_key_compare(ft::Map<Key, T>& ft_c0, std::map<Key, T>& std_c0)	{
+
+	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
+	typename std::map<Key, T>::key_compare std_cmp = std_c0.key_comp();
+	typename std::map<Key, T>::key_compare ft_cmp = ft_c0.key_comp();
+
+	char std_highest = (--std_c0.end())->first;  	// key value of last element
+	char ft_highest = (--ft_c0.end())->first;    	// key value of last element
+
+	std::cout << HEADER_TITLE << "[ Go though map while using key_comp() to check cursor value against the highest value ]" << RESET_COLOR << std::endl;
+	std::map<char,int>::iterator std_it = std_c0.begin();
+	ft::Map<char,int>::iterator ft_it = ft_c0.begin();
+	do {
+		testBool(std_cmp((*std_it++).first,  std_highest) == true
+				&& ft_cmp((*ft_it++).first, ft_highest) == true,"", 0, 0);
+	} while ( std_it != --std_c0.end() && ft_it != --ft_c0.end());
+	testBool((std_cmp((*std_it++).first,  std_highest) == false)
+			&& (ft_cmp((*ft_it++).first, ft_highest) == false),"", 0, 0);
+	testBool((std_cmp((*std_it).first,  (*std_it--).first) == false)
+			&& (ft_cmp((*ft_it).first, (*ft_it--).first) == false),"", 0, 0);
 }
 
 int
-test_map_equal_range( void )	{
-	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
-	{
-		size_t			valgrind_factor = (VALGRIND_MODE == true) ? 100 : 1;
-		size_t			testSize = 5000 / valgrind_factor;
-		int findKey = 42;
-		std::cout << HEADER_TITLE << "[ Test equal_range function with map of " << testSize << " int key and exampleClass mapped value ]" << RESET_COLOR << std::endl;
+test_key_compare_value_compare()	{
 
-		std::vector<ft::pair<int, exampleClass> >	ft_val_0(testSize);
-		std::vector<std::pair<int, exampleClass> >	std_val_0(testSize);
-		srand(time(NULL));
-		for (size_t i = 0; i < testSize; i++)	{
-			int val = rand() % testSize;
-			if (i == testSize / 2)
-				findKey = val;
-			ft_val_0[i] = ft::make_pair(val, exampleClass(i));
-			std_val_0[i] = std::make_pair(val, i);
-		}
+	std::map<char,int> std_c0;
+	ft::Map<char,int> ft_c0;
 
-		std::map<int, exampleClass>	std_c0(std_val_0.begin(), std_val_0.end());
-		ft::Map<int, exampleClass>	ft_c0(ft_val_0.begin(), ft_val_0.end());
-		testMap(ft_c0, std_c0, NOPRINT);
+	std::cout << HEADER_TITLE << "[ Instanciate a map with 3 values (incremental both key and value) ]" << RESET_COLOR << std::endl;
+	std_c0['a'] = ft_c0['a'] = 100;
+	std_c0['b'] = ft_c0['b'] = 101;
+	std_c0['c'] = ft_c0['c'] = 200;
+	std_c0['d'] = ft_c0['d'] = 300;
+	std_c0['e'] = ft_c0['e'] = 400;
+	std_c0['f'] = ft_c0['f'] = 500;
+	std_c0['g'] = ft_c0['g'] = 600;
+	std_c0['h'] = ft_c0['h'] = 700;
 
-		std::cout << HEADER_TITLE << "[ Test equal_range with a value added previously to the map ]" << RESET_COLOR << std::endl;
-		std::pair< std::map<int, exampleClass>::iterator, std::map<int, exampleClass>::iterator>	std_c0_ret = std_c0.equal_range(findKey);
-		ft::pair< ft::Map<int, exampleClass>::iterator, ft::Map<int, exampleClass>::iterator>		ft_c0_ret = ft_c0.equal_range(findKey);
+	test_value_compare<char, int>(ft_c0, std_c0);
+	test_key_compare<char, int>(ft_c0, std_c0);
 
-		if (std_c0_ret.first == std_c0.end())
-			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
-		if (std_c0_ret.second == std_c0.end())
-			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
-		if (ft_c0_ret.first != ft_c0.end())
-			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
-				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
-		if (ft_c0_ret.second != ft_c0.end())
-			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
-				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
-
-		test_map_const_equal_range(findKey, std_c0, ft_c0);
-
-		std::cout << HEADER_TITLE << "[ Test equal_range with a value absent from the map (higher than the highest key)]" << RESET_COLOR << std::endl;
-		std_c0_ret = std_c0.equal_range(testSize * 2);
-		ft_c0_ret = ft_c0.equal_range(testSize * 2);
-
-		if (std_c0_ret.first == std_c0.end())
-			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
-		if (std_c0_ret.second == std_c0.end())
-			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
-		if (ft_c0_ret.first != ft_c0.end())
-			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
-				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
-		if (ft_c0_ret.second != ft_c0.end())
-			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
-				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
-
-		std::cout << HEADER_TITLE << "[ Test equal_range with a value absent from the map (lower than the lowest key)]" << RESET_COLOR << std::endl;
-		std_c0_ret = std_c0.equal_range(-42);
-		ft_c0_ret = ft_c0.equal_range(-42);
-
-		if (std_c0_ret.first == std_c0.end())
-			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
-		if (std_c0_ret.second == std_c0.end())
-			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
-		if (ft_c0_ret.first != ft_c0.end())
-			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
-				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
-		if (ft_c0_ret.second != ft_c0.end())
-			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
-				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
-
-		std::cout << HEADER_TITLE << "[ Test equal_range with empty map ]" << RESET_COLOR << std::endl;
-		ft_c0.clear();
-		std_c0.clear();
-		testMap(ft_c0, std_c0, NOPRINT);
-
-		std_c0_ret = std_c0.equal_range(42);
-		ft_c0_ret = ft_c0.equal_range(42);
-
-		if (std_c0_ret.first == std_c0.end())
-			testBool(ft_c0_ret.first == ft_c0.end(), "", 0,0);
-		if (std_c0_ret.second == std_c0.end())
-			testBool(ft_c0_ret.second == ft_c0.end(), "", 0,0);
-		if (ft_c0_ret.first != ft_c0.end())
-			testBool(ft_c0_ret.first->first == std_c0_ret.first->first
-				&& ft_c0_ret.first->second == std_c0_ret.first->second, "", 0,0);
-		if (ft_c0_ret.second != ft_c0.end())
-			testBool(ft_c0_ret.second->first == std_c0_ret.second->first
-				&& ft_c0_ret.second->second == std_c0_ret.second->second, "", 0,0);
-	}
 	return (0);
 }
 
 int main()
 {
-	test_map_equal_range();
+	test_key_compare_value_compare();
 }
+

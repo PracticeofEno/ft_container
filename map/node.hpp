@@ -37,8 +37,8 @@ public:
         Node<T1, T2> *biggerParent;
 
         if (isNull)
-            return this;
-
+            return getleftend(this);
+        
         if (right->isNull == true)
         {
             biggerParent = getBiggerParent(this);
@@ -58,25 +58,11 @@ public:
         Node<T1, T2> *lowerParent;
 
         if (isNull)
-            return parent;
-        if (left->isNull == true && *this < *parent)
-        {
-            lowerParent = const_cast<Node<T1,T2> *>(this);
-            while (lowerParent->parent)
-                lowerParent = lowerParent->parent;
-            while (lowerParent->left)
-            {
-                lowerParent = lowerParent->left;
-                if (lowerParent->left->isNull == true)
-                    break;
-            }
-            if (lowerParent == this)
-                return this;
-        }
+            return getrightend(this);
 
         if (left->isNull == true)
         {
-            lowerParent = getLowerParent(const_cast<Node<T1,T2>*>(this));
+            lowerParent = getLowerParent(this);
             if (lowerParent == 0)
                 return left;
             else
@@ -127,7 +113,7 @@ private:
         return subtree;
     }
 
-    Node<T1, T2> *getLowerParent(Node<T1, T2> *tmp) const
+    Node<T1, T2> *getLowerParent(const Node<T1, T2> *tmp) const
     {
         Node<T1, T2> *parent;
 
@@ -167,6 +153,40 @@ private:
         {
             return 0;
         }
+    }
+
+    Node<T1,T2> *getrightend(const Node<T1, T2> *tmp) const
+    {
+        Node<T1, T2> *parent;
+
+        parent = tmp->parent;
+        while (parent)
+        {
+            if (parent->parent != 0)
+                parent = parent->parent;
+            else
+                break;
+        }
+        while (parent->right->isNull != false)
+            parent = parent->right;
+        return parent;
+    }
+
+    Node<T1,T2> *getleftend(const Node<T1, T2> *tmp) const 
+    {
+        Node<T1, T2> *parent;
+
+        parent = tmp->parent;
+        while (parent)
+        {
+            if (parent->parent != 0)
+                parent = parent->parent;
+            else
+                break;
+        }
+        while (parent->right->isNull != false)
+            parent = parent->right;
+        return parent;
     }
 };
 

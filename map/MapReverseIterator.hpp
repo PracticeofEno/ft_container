@@ -20,12 +20,12 @@ class MapReverseIterator {
 
 		MapReverseIterator& operator=(const MapReverseIterator& tmp) {
 			current = tmp.getCurrent();
-			//Iterator::operator=(tmp);
 			return *this;
 		}
 
 		iterator_type base() const {
-			return this->current;
+			Iterator it = current;
+			return (++it);
 		}
 
 		MapReverseIterator& operator++() {
@@ -34,7 +34,7 @@ class MapReverseIterator {
 		}
 
 		MapReverseIterator operator++(int) {
-			MapReverseIterator out(*this);
+			MapReverseIterator out(current);
 			--current;
 			return out;
 		}
@@ -45,7 +45,7 @@ class MapReverseIterator {
 		}
 
 		MapReverseIterator operator--(int) {
-			MapReverseIterator out(*this);
+			MapReverseIterator out(current);
 			++current;
 			return out;
 		}
