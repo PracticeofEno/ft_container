@@ -199,75 +199,59 @@ int	test_map_reverseIterator( void );
 int	test_map_reverse( void );
 int	test_map_element_access( void );
 
-template< typename Key, typename T>
 void
-test_value_compare(ft::Map<Key, T>& ft_c0, std::map<Key, T>& std_c0)	{
+testBasicErase( void )	{
 
-	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
-	std::pair<Key, T>	std_highest = *(--std_c0.end());  	// key value of last element
-	ft::pair<Key, T>	ft_highest = *(--ft_c0.end());    	// key value of last element
+		std::map<char,exampleClass> 				std_c0;
+		ft::Map<char,exampleClass> 					ft_c0;
 
-	std::cout << HEADER_TITLE << "[ Go though map while using value_comp() to check cursor value against the highest value ]" << RESET_COLOR << std::endl;
-	std::map<char,int>::iterator	std_it = std_c0.begin();
-	ft::Map<char,int>::iterator		ft_it = ft_c0.begin();
-	do {
-		testBool(std_c0.value_comp()(*std_it++,  std_highest) == true
-				&& ft_c0.value_comp()(*ft_it++, ft_highest) == true,"", 0, 0);
-	} while ( std_it != --std_c0.end() && ft_it != --ft_c0.end());
-	testBool((std_c0.value_comp()(*std_it++,  std_highest) == false)
-			&& (ft_c0.value_comp()(*ft_it++, ft_highest) == false),"", 0, 0);
-	testBool((std_c0.value_comp()((*std_it),  (*std_it--)) == false
-			&& ft_c0.value_comp()((*ft_it), (*ft_it--)) == false),"", 0, 0);
-}
+		// insert some values:
+		std_c0['a']=10;
+		std_c0['b']=20;
+		std_c0['c']=30;
+		std_c0['d']=40;
+		std_c0['e']=50;
+		std_c0['f']=60;
+		std_c0['g'];
 
-template< typename Key, typename T>
-void
-test_key_compare(ft::Map<Key, T>& ft_c0, std::map<Key, T>& std_c0)	{
+		ft_c0['a']=10;
+		ft_c0['b']=20;
+		ft_c0['c']=30;
+		ft_c0['d']=40;
+		ft_c0['e']=50;
+		ft_c0['f']=60;
+		ft_c0['g'];
 
-	std::cout << TITLE << "~~~~~~~~~~~ " << __func__ << " ~~~~~~~~~~~" << RESET_COLOR << std::endl;
-	typename std::map<Key, T>::key_compare std_cmp = std_c0.key_comp();
-	typename std::map<Key, T>::key_compare ft_cmp = ft_c0.key_comp();
+		std::map<char,exampleClass>::iterator		std_it = std_c0.begin();
+		ft::Map<char,exampleClass>::iterator		ft_it = ft_c0.begin();
+		std::map<char,exampleClass>::iterator		std_ite = std_c0.end();
+		ft::Map<char,exampleClass>::iterator		ft_ite = ft_c0.end();
 
-	char std_highest = (--std_c0.end())->first;  	// key value of last element
-	char ft_highest = (--ft_c0.end())->first;    	// key value of last element
+		std::cout << HEADER_TITLE << "[ Erase with position argument ]" << RESET_COLOR << std::endl;
+		std_c0.erase(std_it);
+		ft_c0.erase(ft_it);
+		testMap<char, exampleClass>(ft_c0, std_c0, NOPRINT);
+		testBool( (--std_ite)->first == (--ft_ite)->first , "", 0, 0);
+		std_ite++;
+		ft_ite++;
 
-	std::cout << HEADER_TITLE << "[ Go though map while using key_comp() to check cursor value against the highest value ]" << RESET_COLOR << std::endl;
-	std::map<char,int>::iterator std_it = std_c0.begin();
-	ft::Map<char,int>::iterator ft_it = ft_c0.begin();
-	do {
-		testBool(std_cmp((*std_it++).first,  std_highest) == true
-				&& ft_cmp((*ft_it++).first, ft_highest) == true,"", 0, 0);
-	} while ( std_it != --std_c0.end() && ft_it != --ft_c0.end());
-	testBool((std_cmp((*std_it++).first,  std_highest) == false)
-			&& (ft_cmp((*ft_it++).first, ft_highest) == false),"", 0, 0);
-	testBool((std_cmp((*std_it).first,  (*std_it--).first) == false)
-			&& (ft_cmp((*ft_it).first, (*ft_it--).first) == false),"", 0, 0);
-}
+		std::cout << HEADER_TITLE << "[ Erase with key argument ]" << RESET_COLOR << std::endl;
+		std_c0.erase('c');
+		ft_c0.erase('c');
+		std_c0.erase('g');
+		ft_c0.erase('g');
+		testMap<char, exampleClass>(ft_c0, std_c0, NOPRINT);
 
-int
-test_key_compare_value_compare()	{
-
-	std::map<char,int> std_c0;
-	ft::Map<char,int> ft_c0;
-
-	std::cout << HEADER_TITLE << "[ Instanciate a map with 3 values (incremental both key and value) ]" << RESET_COLOR << std::endl;
-	std_c0['a'] = ft_c0['a'] = 100;
-	std_c0['b'] = ft_c0['b'] = 101;
-	std_c0['c'] = ft_c0['c'] = 200;
-	std_c0['d'] = ft_c0['d'] = 300;
-	std_c0['e'] = ft_c0['e'] = 400;
-	std_c0['f'] = ft_c0['f'] = 500;
-	std_c0['g'] = ft_c0['g'] = 600;
-	std_c0['h'] = ft_c0['h'] = 700;
-
-	test_value_compare<char, int>(ft_c0, std_c0);
-	test_key_compare<char, int>(ft_c0, std_c0);
-
-	return (0);
+		std::cout << HEADER_TITLE << "[ Erase with range argument + iterator validity ]" << RESET_COLOR << std::endl;
+		std_it = std_c0.begin();
+		ft_it = ft_c0.begin();
+		std_c0.erase(std_it,std_ite);
+		ft_c0.erase(ft_it, ft_ite);
+		testMap<char, exampleClass>(ft_c0, std_c0, NOPRINT);
 }
 
 int main()
 {
-	test_key_compare_value_compare();
+	testBasicErase();
 }
 

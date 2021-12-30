@@ -128,7 +128,8 @@ namespace ft
         ///////////        erase           /////////////////////
         void erase (iterator position)
         {
-            _rb.erase((*position).first);
+            if (_rb.erase((*position).first))
+                _size = _size - 1;
         }
 
         size_type erase (const key_type& k)

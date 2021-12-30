@@ -167,7 +167,7 @@ private:
             else
                 break;
         }
-        while (parent->right->isNull != false)
+        while (parent->right->isNull == false)
             parent = parent->right;
         return parent;
     }
@@ -184,7 +184,7 @@ private:
             else
                 break;
         }
-        while (parent->right->isNull != false)
+        while (parent->right->isNull == false)
             parent = parent->right;
         return parent;
     }
