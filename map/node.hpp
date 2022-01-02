@@ -109,6 +109,8 @@ private:
         while (subtree->left->isNull == false)
         {
             subtree = subtree->left;
+            if (subtree->left->isNull == true)
+                break;
         }
         return subtree;
     }
@@ -184,8 +186,8 @@ private:
             else
                 break;
         }
-        while (parent->right->isNull == false)
-            parent = parent->right;
+        while (parent->left->isNull == false)
+            parent = parent->left;
         return parent;
     }
 };

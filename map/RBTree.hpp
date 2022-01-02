@@ -16,15 +16,15 @@ public:
     std::allocator<Node<T1, T2> > alloc;
     Node<T1, T2> leaf;
 
-    RBTree() : root(0) { leaf.isNull = true;}
+    RBTree() : root(0) { leaf.isNull = true; }
     RBTree(std::allocator<Node<T1, T2> > _alloc) : root(0), alloc(_alloc) { leaf.isNull = true; }
 
     Node<T1, T2> *insert(ft::pair<T1, T2> data)
     {
-        Node<T1,T2> tmp2(data);
+        Node<T1, T2> tmp2(data);
         Node<T1, T2> *insertNode = alloc.allocate(1);
         Node<T1, T2> *tmp;
-        alloc.construct(insertNode, *insertNode);
+        alloc.construct(insertNode, data);
         insertNode->parent = 0;
         insertNode->right = 0;
         insertNode->left = 0;
@@ -128,9 +128,9 @@ public:
         alloc = _alloc;
     }
 
-    Node<T1,T2>* begin() const
+    Node<T1, T2> *begin() const
     {
-        Node<T1,T2>* tmp;
+        Node<T1, T2> *tmp;
 
         tmp = root;
         if (tmp != 0)
@@ -145,9 +145,9 @@ public:
         return (0);
     }
 
-    Node<T1,T2>* end() const
+    Node<T1, T2> *end() const
     {
-        Node<T1,T2>* tmp;
+        Node<T1, T2> *tmp;
 
         tmp = root;
         while (tmp)
@@ -181,7 +181,7 @@ private:
         if (delNode->left == &leaf && delNode->right == &leaf) // case) delnode is  leaf node
         {
             removeNode = delNode;
-            if (delNode->parent != 0)
+            if (delNode != root)
             {
                 if (delNode->parent->left == delNode)
                     setLeaf(&(delNode->parent->left));
@@ -202,55 +202,46 @@ private:
         {
             removeNode = findLargestSubtree(delNode->left);
             changeNode(removeNode, delNode);
-            delNode->right = 0;
-            
-            if (delNode->parent->right == delNode) // if removeNode is right
-                delNode->parent->right = delNode->left;
-            else
-                delNode->parent->left = delNode->left;
-            
+            delNode->left = &leaf;
+            delNode->right = &leaf;
             if (delNode == root)
                 root = removeNode;
+            if (delNode->parent->left == delNode)
+                delNode->parent->left = &leaf;
+            else if (delNode->parent->right == delNode)
+                delNode->parent->right = &leaf;
 
-            delNode->left->color = delNode->left->color + 1;
-            delNode->left->parent = delNode->parent;
             if (delNode->color == BLACK)
             {
-                eraseRelocation(delNode->left);
-                // eraseRelocation
+                if (removeNode->left->color == RED)
+                    removeNode->left->color = BLACK;
+                else if (removeNode->left->color == BLACK)
+                    removeNode->left->color = DBLACK;
+                if (removeNode->left->color == DBLACK)
+                    eraseRelocation(removeNode->left);
             }
         }
         else if (delNode->left == &leaf && delNode->right != &leaf)
         {
-            delNode->right->parent = delNode->parent;
             removeNode = findSmallestSubtree(delNode->right);
-            if (delNode->parent != 0)
-            {
-                if (delNode->parent->left == delNode)
-                    delNode->parent->left = delNode->right;
-                else
-                    delNode->parent->right = delNode->right;
-            }
-            else
-            {
-                root = delNode->right;
-                root->parent = 0;
-            }
+            changeNode(removeNode, delNode);
+            delNode->left = &leaf;
+            delNode->right = &leaf;
+            if (delNode == root)
+                root = removeNode;
+            if (delNode->parent->left == delNode)
+                delNode->parent->left = &leaf;
+            else if (delNode->parent->right == delNode)
+                delNode->parent->right = &leaf;
 
-            if (delNode->right->color == BLACK)
+            if (delNode->color == BLACK)
             {
-                delNode->right->color = DBLACK;
-                delNode->right->parent = delNode->parent;
-            }
-            else if (delNode->right->color == RED)
-
-            {
-                delNode->right->color = BLACK;
-                // dealloc removeNode;
-            }
-            if (delNode->right->color == DBLACK)
-            {
-                eraseRelocation(delNode->right);
+                if (removeNode->right->color == RED)
+                    removeNode->left->color = BLACK;
+                else if (removeNode->left->color == BLACK)
+                    removeNode->left->color = DBLACK;
+                if (removeNode->left->color == DBLACK)
+                    eraseRelocation(removeNode->left);
             }
         }
     }
@@ -258,39 +249,226 @@ private:
     void eraseRelocation(Node<T1, T2> *dBlackNode)
     {
         Node<T1, T2> *brother;
+        Node<T1, T2> *parentTmp = 0;
 
         brother = getBrother(dBlackNode);
         if (brother != 0)
         {
+            parentTmp = brother->parent;
             if (brother->color == RED)
             {
-                brother->color = BLACK;
-                brother->parent->color = RED;
-                rotateLeft(dBlackNode->parent);
+                if (brother->parent->left == brother)
+                {
+                    rotateRight(dBlackNode->parent);
+                    brother->color = BLACK;
+                    brother->right->color = RED;
+                }
+                else if (brother->parent->right == brother)
+                {
+                    rotateLeft(dBlackNode->parent);
+                    brother->color = BLACK;
+                    brother->left->color = RED;
+                }
+                if(dBlackNode == &leaf)
+                    dBlackNode->parent = parentTmp;
+                eraseRelocation(dBlackNode);
             }
             else
             {
-                if (brother->left->color == RED)
+                if (brother->left->color == RED && brother->right->color == RED)
                 {
-                    rotateRight(brother->parent);
-                    brother->color = RED;
-                    brother->left->color = BLACK;
-                    brother->right->color = BLACK;
-                    dBlackNode->color = BLACK;
+                    if (brother->parent->left == brother)
+                    {
+                        rotateRight(brother->parent);
+                        leaf.color = BLACK;
+                        brother->left->color = BLACK;
+                    }
+                    else
+                    {
+                        rotateLeft(brother->parent);
+                        leaf.color = BLACK;
+                        brother->right->color = BLACK;
+                    }
+                }
+                else if (brother->left->color == RED)
+                {
+                    if (brother->parent->left == brother)
+                    {
+                        dBlackNode->color = BLACK;
+                        brother->left->color = BLACK;
+                        rotateRight(dBlackNode->parent);
+                    }
+                    else
+                    {
+                        rotateRight(brother);
+                        brother->color = RED;
+                        brother->parent->color = BLACK;
+                        if(dBlackNode == &leaf)
+                            dBlackNode->parent = parentTmp;
+                        eraseRelocation(dBlackNode);
+                    }
                 }
                 else if (brother->left->color > RED && brother->right->color > RED)
                 {
                     brother->color = RED;
-                    dBlackNode->color = dBlackNode->color - 1;
-                    dBlackNode->parent->color = dBlackNode->parent->color + 1;
+                    dBlackNode->color = BLACK;
+                    if (dBlackNode->parent->color == RED)
+                        dBlackNode->parent->color = BLACK;
+                    else if (dBlackNode->parent->color == BLACK)
+                        dBlackNode->parent->color = DBLACK;
                     if (dBlackNode->parent->color == DBLACK)
                         eraseRelocation(dBlackNode->parent);
                 }
                 else if (brother->right->color == RED)
                 {
+                    if (brother->parent->left == brother)
+                    {
+                        rotateLeft(brother);
+                        brother->parent->color = BLACK;
+                        brother->color = RED;
+                        if(dBlackNode == &leaf)
+                            dBlackNode->parent = parentTmp;
+                        eraseRelocation(dBlackNode);
+                    }
+                    else
+                    {
+                        rotateLeft(brother->parent);
+                        brother->color = BLACK;
+                        brother->right->color = BLACK;
+                        leaf.color = BLACK;
+                    }
+                }
+            }
+
+            /*
+
+            if (brother->color == RED)
+            {
+                brother->color = BLACK;
+                brother->parent->color = RED;
+                rotateLeft(dBlackNode->parent);
+                eraseRelocation(dBlackNode);
+            }
+            else
+            {
+                if (brother->left->color == RED && brother->right->color == RED)
+                {
+                    if (brother->parent->left == brother)
+                    {
+                        rotateRight(brother->parent);
+                        leaf.color = BLACK;
+                        brother->left->color = BLACK;
+                    }
+                    else
+                    {
+                        rotateLeft(brother->parent);
+                        leaf.color = BLACK;
+                        brother->right->color = BLACK;
+                    }
+                }
+                else if (brother->left->color == RED)
+                {
+                    rotateRight(brother->parent);
+                    brother->parent->color = BLACK;
                     brother->color = RED;
-                    brother->right->color = BLACK;
+                    if (dBlackNode == &leaf)
+                        dBlackNode->parent = parentTmp;
+                    eraseRelocation(dBlackNode);
+                }
+                else if (brother->left->color > RED && brother->right->color > RED)
+                {
+                    brother->color = RED;
+                    dBlackNode->color = BLACK;
+                    if (dBlackNode->parent->color == RED)
+                        dBlackNode->parent->color = BLACK;
+                    else if (dBlackNode->parent->color == BLACK)
+                        dBlackNode->parent->color = DBLACK;
+                    if (dBlackNode->parent->color == DBLACK)
+                        eraseRelocation(dBlackNode->parent);
+
+                }
+                else if (brother->right->color == RED)
+                {
                     rotateLeft(brother);
+                    brother->color = RED;
+                    brother->parent->color = BLACK;
+                    if (dBlackNode == &leaf)
+                        dBlackNode->parent = parentTmp;
+                    eraseRelocation(dBlackNode);
+                }
+            }
+            */
+        }
+        leaf.color = BLACK;
+        root->color = BLACK;
+    }
+
+    void eraseRelocation(Node<T1, T2> *dBlackNode, bool nested)
+    {
+        (void)nested;
+        Node<T1, T2> *brother;
+        Node<T1, T2> *parentTmp = 0;
+
+        brother = getBrother(dBlackNode);
+        if (brother != 0)
+        {
+            parentTmp = brother->parent;
+            if (brother->color == RED)
+            {
+                brother->color = BLACK;
+                brother->parent->color = RED;
+                if (brother->parent->left == brother)
+                    rotateRight(dBlackNode->parent);
+                else
+                    rotateLeft(dBlackNode->parent);
+                if (dBlackNode == &leaf)
+                    dBlackNode->parent = parentTmp;
+                eraseRelocation(dBlackNode);
+            }
+            else
+            {
+                if (brother->left->color == RED && brother->right->color == RED)
+                {
+                    if (brother->parent->left == brother)
+                    {
+                        rotateRight(brother->parent);
+                        leaf.color = BLACK;
+                        brother->left->color = BLACK;
+                    }
+                    else
+                    {
+                        rotateLeft(brother->parent);
+                        leaf.color = BLACK;
+                        brother->right->color = BLACK;
+                    }
+                }
+                else if (brother->left->color == RED)
+                {
+                    rotateRight(brother->parent);
+                    brother->parent->color = BLACK;
+                    brother->color = RED;
+                    if (dBlackNode == &leaf)
+                        dBlackNode->parent = parentTmp;
+                    eraseRelocation(dBlackNode);
+                }
+                else if (brother->left->color > RED && brother->right->color > RED)
+                {
+                    brother->color = RED;
+                    dBlackNode->color = BLACK;
+                    if (dBlackNode->parent->color == RED)
+                        dBlackNode->parent->color = BLACK;
+                    else if (dBlackNode->parent->color == BLACK)
+                        dBlackNode->parent->color = DBLACK;
+                    if (dBlackNode->parent->color == DBLACK)
+                        eraseRelocation(dBlackNode->parent);
+                }
+                else if (brother->right->color == RED)
+                {
+                    rotateLeft(brother);
+                    brother->color = RED;
+                    brother->parent->color = BLACK;
+                    if (dBlackNode == &leaf)
+                        dBlackNode->parent = parentTmp;
                     eraseRelocation(dBlackNode);
                 }
             }
@@ -357,6 +535,8 @@ private:
         else
         {
             root = node->left;
+            node->left->parent = 0;
+            node->parent = node->left;
         }
 
         if (isRightChild == 1)
@@ -365,8 +545,13 @@ private:
             node->parent->left = node->left;
         node->left->right = node;
         node->parent = node->left;
-        node->left = tmp;
-        tmp->parent = node;
+        if (tmp != 0)
+        {
+            node->left = tmp;
+            tmp->parent = node;
+        }
+        else
+            node->left = &leaf;
     }
 
     void rotateLeft(Node<T1, T2> *node)
@@ -394,8 +579,13 @@ private:
             node->parent->left = node->right;
         node->right->left = node;
         node->parent = node->right;
-        node->right = tmp;
-        tmp->parent = node;
+        if (tmp != 0)
+        {
+            node->right = tmp;
+            tmp->parent = node;
+        }
+        else
+            node->right = &leaf;
     }
 
     void relocation(Node<T1, T2> *insertNode)
@@ -435,7 +625,6 @@ private:
             parent->color = BLACK;
             grand->color = RED;
             insert->color = RED;
-
         }
         else if (grand->left == parent && parent->right == insert)
         {
@@ -471,28 +660,30 @@ private:
         relocation(node);
     }
 
-    void changeNode(Node<T1,T2> *findNode, Node<T1, T2>* delNode)
+    void changeNode(Node<T1, T2> *replaceNode, Node<T1, T2> *delNode)
     {
-        Node<T1, T2> copyA(*findNode);
+        Node<T1, T2> copyA(*replaceNode);
         Node<T1, T2> copyB(*delNode);
 
-        nodeSwap(delNode, findNode);
+        nodeSwap(delNode, replaceNode);
         nodeSwap(&copyA, delNode);
-        if (findNode->left == findNode)
+        if (replaceNode->left == replaceNode)
         {
-            findNode->left = delNode;
-            delNode->parent = findNode;
+            replaceNode->left = copyA.left;
+            replaceNode->left->parent = replaceNode;
+            delNode->parent = replaceNode;
         }
-        if (findNode->right == findNode)
+        if (replaceNode->right == replaceNode)
         {
-            findNode->right = delNode;
-            delNode->parent = findNode;
+            replaceNode->right = copyA.right;
+            replaceNode->right->parent = replaceNode;
+            delNode->parent = replaceNode;
         }
-        findNode->color = copyB.color;
+        replaceNode->color = copyB.color;
         delNode->color = copyA.color;
     }
 
-    void nodeSwap(Node<T1,T2> *originNode, Node<T1, T2>* replaceNode)
+    void nodeSwap(Node<T1, T2> *originNode, Node<T1, T2> *replaceNode)
     {
         if (originNode->left != &leaf)
         {
@@ -503,7 +694,7 @@ private:
         {
             replaceNode->left = &leaf;
         }
-        
+
         if (originNode->right != &leaf)
         {
             originNode->right->parent = replaceNode;
@@ -530,12 +721,12 @@ private:
         else
         {
             replaceNode->parent = 0;
-        }   
+        }
     }
-    
+
     void setLeafNodeParent()
     {
-        Node<T1,T2>* tmp;
+        Node<T1, T2> *tmp;
 
         tmp = root;
         while (tmp->isNull == false)

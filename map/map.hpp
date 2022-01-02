@@ -90,12 +90,12 @@ namespace ft
             tmp = _rb.search(val.first, &tmp);
             if (tmp) // key is exist
             {
-                return ft::make_pair(iterator(tmp), true);
+                return ft::make_pair(iterator(tmp), false);
             }
             else  // non exist
             {
                 _size = _size + 1;
-                return ft::make_pair(iterator(_rb.insert(val)), false);
+                return ft::make_pair(iterator(_rb.insert(val)), true);
             }
         }
 
@@ -111,6 +111,7 @@ namespace ft
             }
             else  // non exist
             {
+                _size = _size + 1;
                 return iterator(_rb.insert(val));
             }
         }
@@ -148,12 +149,14 @@ namespace ft
             return n;
         }
 
-        void erase (iterator first, iterator last)
+        void erase (iterator its, iterator ite)
         {
-            while (first != last)
+            iterator it;
+            while (its != ite)
             {
-                _rb.erase( (*first).first );
-                first++;
+                it = its;
+                its++;
+                erase( it->first );
             }
         }
         /////////////////////////////////////////////////////////
