@@ -184,9 +184,9 @@ private:
             if (delNode != root)
             {
                 if (delNode->parent->left == delNode)
-                    setLeaf(&(delNode->parent->left));
-                else
-                    setLeaf(&(delNode->parent->right));
+                    delNode->parent->left = &leaf;
+                else if (delNode->parent->right == delNode)
+                    delNode->parent->right = &leaf;
             }
             else
             {
@@ -202,23 +202,28 @@ private:
         {
             removeNode = findLargestSubtree(delNode->left);
             changeNode(removeNode, delNode);
-            delNode->left = &leaf;
             delNode->right = &leaf;
             if (delNode == root)
                 root = removeNode;
             if (delNode->parent->left == delNode)
-                delNode->parent->left = &leaf;
+            {
+                 delNode->parent->left = delNode->left;
+                 delNode->left->parent = delNode->parent;
+            }
             else if (delNode->parent->right == delNode)
-                delNode->parent->right = &leaf;
+            {
+                delNode->parent->right = delNode->left;
+                delNode->left->parent = delNode->parent;
+            }
 
             if (delNode->color == BLACK)
             {
-                if (removeNode->left->color == RED)
-                    removeNode->left->color = BLACK;
-                else if (removeNode->left->color == BLACK)
-                    removeNode->left->color = DBLACK;
-                if (removeNode->left->color == DBLACK)
-                    eraseRelocation(removeNode->left);
+                if (delNode->left->color == RED)
+                    delNode->left->color = BLACK;
+                else if (delNode->left->color == BLACK)
+                    delNode->left->color = DBLACK;
+                if (delNode->left->color == DBLACK)
+                    eraseRelocation(delNode->left);
             }
         }
         else if (delNode->left == &leaf && delNode->right != &leaf)
