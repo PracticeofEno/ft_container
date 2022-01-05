@@ -163,7 +163,10 @@ namespace ft
 
         void swap (Map& x)
         {
-            (void)x;
+            node_type* tmp;
+            tmp = x.getRoot();
+            x.setRoot(this->getRoot());
+            setRoot(tmp);
         }
 
         void clear()
@@ -427,6 +430,25 @@ namespace ft
         RBTree<Key, T> _rb;
         key_compare _comp;
         size_type _size;
+
+        node_type* getRoot()
+        {
+            return _rb.root;
+        }
+        void setRoot(node_type* tmp)
+        {
+            _rb.root = tmp;
+            size_type size = 0;
+            iterator its = begin();
+            iterator ite = end();
+            while (its != ite)
+            {
+                size++;
+                its++;
+            }
+            _size = size;
+        }
+
     };
 }
 

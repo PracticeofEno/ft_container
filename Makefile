@@ -1,11 +1,10 @@
 NAME = ft_container
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-#-std=c++98 
 CC = clang++
 
 CFLAGS += -I ./Iterators/ -I./vector/ -I ./utils/ -I ./stack/ -I ./map/
 
-FILES = vector.cpp
+FILES = 
 
 SRCS = $(addprefix srcs/, $(addsuffix .cpp, $(FILES))) 
 
@@ -14,7 +13,7 @@ OBJS = $(SRCS:.cpp=.o)
 all : $(NAME)
 
 $(NAME) : 
-	$(CC) $(CFLAGS) -g -o $(NAME) main.cpp 
+	$(CC) $(CFLAGS) -g -o $(NAME) main.cpp
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -g -c -o $@ $^
@@ -26,5 +25,11 @@ fclean :
 	rm -f $(OBJS) $(C_OBJS) $(NAME)
 
 re : fclean all
+
+map : $(MAP_OBJS)
+	$(CC) $(CFLAGS) -g -o map $(MAP_OBJS)
+vector :
+
+stack :
 
 .PHONY: clean fclean all re bonus

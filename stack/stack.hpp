@@ -12,6 +12,7 @@ namespace ft
         typedef T value_type;
         typedef Container container_type;
         typedef size_t size_type;
+        container_type c;
 
         explicit stack(const container_type& ctnr = container_type())
         { 
@@ -48,7 +49,7 @@ namespace ft
         }
 
     private:
-        container_type c;
+        
     };
 
     template <class T, class Container>
