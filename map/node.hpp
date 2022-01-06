@@ -6,18 +6,20 @@
 #define BLACK 2
 #define DBLACK 3
 
-template <class T1, class T2>
+template <class T1, class T2, class Compare>
 class Node
 {
 public:
-    Node<T1, T2> *parent;
-    Node<T1, T2> *left;
-    Node<T1, T2> *right;
+    typedef Compare key_compare;
+    Node<T1, T2, Compare> *parent;
+    Node<T1, T2, Compare> *left;
+    Node<T1, T2, Compare> *right;
     int color;
     bool isNull;
     ft::pair<T1, T2> _data;
+    key_compare comp;
 
-    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false) {}
+    Node() : parent(0), left(0), right(0), color(BLACK), isNull(false), comp(Compare()) {}
     Node(const Node& tmp) : parent(tmp.parent), left(tmp.left), right(tmp.right), color(tmp.color), isNull(tmp.isNull), _data(tmp._data) { }
     Node(const ft::pair<T1,T2> tmp) : parent(0), left(0), right(0), color(BLACK), isNull(false), _data(tmp) {}
 
@@ -32,9 +34,9 @@ public:
         return *this;
     }
 
-    const Node<T1, T2>* getNext() const
+    const Node<T1, T2, Compare>* getNext() const
     {
-        Node<T1, T2> *biggerParent;
+        Node<T1, T2, Compare> *biggerParent;
 
         if (isNull)
             return getleftend(this);
@@ -53,9 +55,9 @@ public:
         }
     }
 
-    const Node<T1, T2> *getPrev() const
+    const Node<T1, T2, Compare> *getPrev() const
     {
-        Node<T1, T2> *lowerParent;
+        Node<T1, T2, Compare> *lowerParent;
 
         if (isNull)
             return getrightend(this);
@@ -95,7 +97,7 @@ public:
     }
 
 private:
-    Node<T1, T2> *findLargestSubtree(Node<T1, T2> *subtree) const
+    Node<T1, T2, Compare> *findLargestSubtree(Node<T1, T2, Compare> *subtree) const
     {
         while (subtree->right->isNull == false)
         {
@@ -104,7 +106,7 @@ private:
         return subtree;
     }
 
-    Node<T1, T2> *findSmallestSubtree(Node<T1, T2> *subtree) const
+    Node<T1, T2, Compare> *findSmallestSubtree(Node<T1, T2, Compare> *subtree) const
     {
         while (subtree->left->isNull == false)
         {
@@ -115,14 +117,14 @@ private:
         return subtree;
     }
 
-    Node<T1, T2> *getLowerParent(const Node<T1, T2> *tmp) const
+    Node<T1, T2, Compare> *getLowerParent(const Node<T1, T2, Compare> *tmp) const
     {
-        Node<T1, T2> *parent;
+        Node<T1, T2, Compare> *parent;
 
         parent = tmp->parent;
         if (parent != 0)
         {
-            while (*tmp < *(parent))
+            while ( comp(tmp->_data.first, parent->_data.first) == true)
             {
                 parent = parent->parent;
                 if (parent == 0)
@@ -136,14 +138,14 @@ private:
         }
     }
 
-    Node<T1, T2> *getBiggerParent(const Node<T1, T2> *tmp) const
+    Node<T1, T2, Compare> *getBiggerParent(const Node<T1, T2, Compare> *tmp) const
     {
-        Node<T1, T2> *parent;
+        Node<T1, T2, Compare> *parent;
 
         parent = tmp->parent;
         if (parent != 0)
         {
-            while (*tmp > *(parent))
+            while ( comp(tmp->_data.first, parent->_data.first) == false)
             {
                 parent = parent->parent;
                 if (parent == 0)
@@ -157,9 +159,9 @@ private:
         }
     }
 
-    Node<T1,T2> *getrightend(const Node<T1, T2> *tmp) const
+    Node<T1,T2, Compare> *getrightend(const Node<T1, T2, Compare> *tmp) const
     {
-        Node<T1, T2> *parent;
+        Node<T1, T2, Compare> *parent;
 
         parent = tmp->parent;
         while (parent)
@@ -174,9 +176,9 @@ private:
         return parent;
     }
 
-    Node<T1,T2> *getleftend(const Node<T1, T2> *tmp) const 
+    Node<T1,T2, Compare> *getleftend(const Node<T1, T2, Compare> *tmp) const 
     {
-        Node<T1, T2> *parent;
+        Node<T1, T2, Compare> *parent;
 
         parent = tmp->parent;
         while (parent)
@@ -192,38 +194,38 @@ private:
     }
 };
 
-template <class T1, class T2>
-bool operator==(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator==(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return lhs._data.first == rhs._data.first && lhs._data.second == rhs._data.second;
 }
 
-template <class T1, class T2>
-bool operator!=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator!=(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return !(lhs == rhs);
 }
 
-template <class T1, class T2>
-bool operator<(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator<(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return lhs._data.first < rhs._data.first || (!(rhs._data.first < lhs._data.first) && lhs._data.second < rhs._data.second);
 }
 
-template <class T1, class T2>
-bool operator<=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator<=(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return !(rhs < lhs);
 }
 
-template <class T1, class T2>
-bool operator>(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator>(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return rhs < lhs;
 }
 
-template <class T1, class T2>
-bool operator>=(const Node<T1, T2> &lhs, const Node<T1, T2> &rhs)
+template <class T1, class T2, class Compare>
+bool operator>=(const Node<T1, T2, Compare> &lhs, const Node<T1, T2, Compare> &rhs)
 {
     return !(lhs < rhs);
 }

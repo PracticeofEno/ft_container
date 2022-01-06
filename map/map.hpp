@@ -7,7 +7,7 @@
 #include "node.hpp"
 #include <iostream>
 
-template <typename A, typename B>
+template <typename A, typename B, typename C>
 class RBTree;
 
 namespace ft
@@ -15,7 +15,7 @@ namespace ft
     template <class Key,                                           // map::key_type
               class T,                                             // map::mapped_type
               class Compare = std::less<Key>,                      // map::key_compare
-              class Alloc = std::allocator<Node<Key, T> > // map::allocator_type
+              class Alloc = std::allocator<Node<Key, T, Compare> > // map::allocator_type
               >
     class Map
     {
@@ -23,7 +23,7 @@ namespace ft
         typedef Key key_type;
         typedef T mapped_type;
         typedef ft::pair<Key, T> value_type;
-        typedef Node<Key, T> node_type;
+        typedef Node<Key, T, Compare> node_type;
         typedef Compare key_compare;
         typedef Alloc allocator_type;
         typedef typename allocator_type::reference reference;
@@ -41,13 +41,13 @@ namespace ft
 
         explicit Map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _alloc(alloc), _comp(comp), _size(0)
         { 
-            _rb.setAlloc(alloc);
+            _rb.setAlloc(alloc, comp);
         }
 
         template <class InputIterator>
         Map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _size(0)
         { 
-            _rb.setAlloc(alloc);
+            _rb.setAlloc(alloc, comp);
             _size = 0;
             while (first != last)
             {
@@ -83,9 +83,9 @@ namespace ft
 
         //////        Modifiers         ///////////
         //////        insert            ///////////
-        ft::pair<iterator, bool> insert(value_type val)
+        ft::pair<iterator, bool> insert(const value_type& val)
         {
-            Node<Key,T> *tmp;
+            Node<Key,T,Compare> *tmp;
 
             tmp = _rb.search(val.first, &tmp);
             if (tmp) // key is exist
@@ -99,9 +99,9 @@ namespace ft
             }
         }
 
-        iterator insert (iterator position, value_type val)
+        iterator insert (iterator position, const value_type& val)
         {
-            Node<Key,T> *tmp;
+            Node<Key,T,Compare> *tmp;
             (void)position;
 
             tmp = _rb.search(val.first, &tmp);
@@ -268,7 +268,7 @@ namespace ft
         {
             key_type tmp2 = k;
 
-            Node<Key,T>* tmp(_rb.search(tmp2));
+            Node<Key,T,Compare>* tmp(_rb.search(tmp2));
             if (tmp == 0)
                 return end();
             else
@@ -277,7 +277,7 @@ namespace ft
 
         const_iterator find (const key_type& k) const
         {
-            Node<Key,T>* tmp(_rb.search(k));
+            Node<Key,T,Compare>* tmp(_rb.search(k));
 
             if (tmp == 0)
                 return end();
@@ -287,7 +287,7 @@ namespace ft
 
         size_type count (const key_type& k) const
         {
-            Node<Key,T>* tmp(_rb.search(k));
+            Node<Key,T,Compare>* tmp(_rb.search(k));
             if (tmp == 0)
                 return 0;
             else
@@ -427,7 +427,7 @@ namespace ft
     
     private : 
         allocator_type _alloc;
-        RBTree<Key, T> _rb;
+        RBTree<Key, T, Compare> _rb;
         key_compare _comp;
         size_type _size;
 
